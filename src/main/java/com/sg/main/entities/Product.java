@@ -52,6 +52,7 @@ public class Product {
 	private boolean verified= false;
 	private boolean active =true;
 	@Enumerated(EnumType.STRING)
+	@Column(name = "product_condition")
 	private ProductCondition condition;
 	@Column( precision = 10, scale = 3)
 	private BigDecimal securityDeposit;
