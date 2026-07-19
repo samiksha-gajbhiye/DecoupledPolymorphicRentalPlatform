@@ -58,16 +58,34 @@ public class ProductService {
 		    System.out.println("Category ID = " + product.getCategory().getCategoryId());
 		}
 
+		//lambda expression to check does user exist or not (true get id or throw runtime exception)
+		
 	    User user = userRepository.findById(product.getUser().getId())
 	            .orElseThrow(() -> new RuntimeException("User not found"));
 
+	    //lambda expression to check , does category exist or not (if true get id or throw runtime exception )
+	    
 	    Category category = categoryRepository.findById(product.getCategory().getCategoryId())
 	            .orElseThrow(() -> new RuntimeException("Category not found"));
 
 	    product.setUser(user);
 	    product.setCategory(category);
 	    
+	    
+	    // creating automated product code for each category 
+	    String prefix = category.getName()
+                .substring(0, 3)
+                .toUpperCase();
+
+String productCode = prefix + "-"
++ System.currentTimeMillis();
+
+product.setProductCode(productCode);
+	    
 	    product = productRepository.save(product);
+	    
+	    
+	//uploading the file to local folder 
 	    
 	    String uploadDir = "uploads/products/";
 
@@ -80,10 +98,13 @@ public class ProductService {
 	    boolean firstImage = true;
 	    int displayOrder = 1;
 
-	    System.out.println("No. of images = " + productImages.size());
+	  //  System.out.println("No. of images = " + productImages.size());
+	    
+	 
+	    //loop to process the product image 
 	    for (MultipartFile image : productImages) {
 
-	    	System.out.println("Processing : " + image.getOriginalFilename());
+	   // 	System.out.println("Processing : " + image.getOriginalFilename());
 
 	    	String fileName =
 	    	        UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
@@ -91,14 +112,20 @@ public class ProductService {
 
 	        Files.write(path, image.getBytes());
 
-	        System.out.println("File Name : " + image.getOriginalFilename());
+	      /*  System.out.println("File Name : " + image.getOriginalFilename());
 	        System.out.println("Content Type : " + image.getContentType());
 	        System.out.println("Size : " + image.getSize());
+	        
+	       */
+	        
 	        
 	        BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
 
 	        ProductImage img = new ProductImage();
 
+	        
+	  // sending the all the data to the database
+	        
 	        img.setProduct(product);
 	        img.setImageUrl(fileName);
 

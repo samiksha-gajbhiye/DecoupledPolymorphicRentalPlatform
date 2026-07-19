@@ -26,6 +26,8 @@ public class UserService {
 	public User registerUser(User user, MultipartFile profileImage) throws IOException
 	{
 		
+		
+	//uploading the  user image to local folder 
 		String uploadDir = "uploads/";
 
 		File directory = new File(uploadDir);
@@ -34,6 +36,8 @@ public class UserService {
 		    directory.mkdirs();
 		}
 
+		
+	//setting file name for the image
 		String fileName = System.currentTimeMillis() + "_"
 		        + profileImage.getOriginalFilename();
 
@@ -42,10 +46,14 @@ public class UserService {
 		Files.write(path, profileImage.getBytes());
 
 		user.setProfileImage(fileName);
-		System.out.println(user);
+	/*	System.out.println(user);
 	    System.out.println(user.getAddress());
 	    System.out.println(user.getRole());
 	    System.out.println(user.getRole().getId());
+	    
+	*/
+		
+	//setting the role of the user (admin , owner , renter)
 	    Role role = roleRepo.findById(user.getRole().getId())
 	            .orElseThrow(() -> new RuntimeException("Role not found"));
 
@@ -59,7 +67,7 @@ public class UserService {
 	        
 
 	    }
-		return userRepo.save(user);
+		return userRepo.save(user);  //sending hte user data to database
 	}
 	
 	

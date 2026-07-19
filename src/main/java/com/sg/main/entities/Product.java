@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.sg.main.entities.enums.AvailabilityStatus;
 import com.sg.main.entities.enums.ProductCondition;
 
@@ -47,7 +49,9 @@ public class Product {
 	@Column(unique = true)
 	private String productCode;
 	private String location;
+	@CreationTimestamp
 	private LocalDateTime createdAt;
+	@CreationTimestamp
 	private LocalDateTime updatedAt;
 	private boolean verified= false;
 	private boolean active =true;
