@@ -38,6 +38,7 @@ public class ProductService {
 	private CategoryRepository categoryRepository;
 	
 	
+	// Method to register product 
 	
 	public Product registerProduct(Product product,
 	        List<MultipartFile> productImages) throws IOException {
@@ -73,12 +74,12 @@ public class ProductService {
 	    
 	    
 	    // creating automated product code for each category 
-	    String prefix = category.getName()
+	    		String prefix = category.getName()
                 .substring(0, 3)
                 .toUpperCase();
 
-String productCode = prefix + "-"
-+ System.currentTimeMillis();
+	    		String productCode = prefix + "-"
+	    			+ System.currentTimeMillis();
 
 product.setProductCode(productCode);
 	    
@@ -146,5 +147,13 @@ product.setProductCode(productCode);
 	    return product;
 	}
 	
+	
+	//Method to get product
+	
+	public List<Product> GetProductDetailsByName(String title )
+	{
+		
+		return productRepository.findByTitleIgnoreCase(title) ;
+	}
 	
 }

@@ -3,6 +3,9 @@ package com.sg.main.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,6 +24,7 @@ public class Category {
 	private String description;
 	private String status;
 	@OneToMany(mappedBy="category")
+	@JsonManagedReference("category-product")
 	private List<Product> products = new ArrayList<>();
 	public int getCategoryId() {
 		return categoryId;

@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +30,7 @@ public class User {
 	private String name;
 	private String email;
 	private long phone;
+	@JsonIgnore
 	private String password;
 	private String profileImage;
 	@ManyToOne
@@ -35,6 +39,7 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Address> address= new ArrayList<>();
 	@OneToMany(mappedBy="user")
+	@JsonManagedReference("user-product")
 	private List<Product> products = new ArrayList<>();
 	
 	public String getPassword() {

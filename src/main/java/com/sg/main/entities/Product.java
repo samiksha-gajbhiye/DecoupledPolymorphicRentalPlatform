@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sg.main.entities.enums.AvailabilityStatus;
 import com.sg.main.entities.enums.ProductCondition;
 
@@ -32,9 +34,11 @@ public class Product {
 	private int  productId;
 	@ManyToOne
 	@JoinColumn(name = "userId")
+	@JsonBackReference("user-product")
 	private User user ;
 	@ManyToOne
 	@JoinColumn(name = "categoryId")
+	@JsonBackReference("category-product")
 	private Category category;
 	@Column(nullable = false , length = 30 )
 	private String title ;
@@ -70,6 +74,7 @@ public class Product {
 		    cascade = CascadeType.ALL,
 		    orphanRemoval = true
 		)
+	@JsonManagedReference
 		private List<ProductImage> images = new ArrayList<>();
 	
 	public int getProductId() {
