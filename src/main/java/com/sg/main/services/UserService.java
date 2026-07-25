@@ -19,55 +19,25 @@ import com.sg.main.repositories.roleRepository;
 public class UserService {
 
 	@Autowired
-	private UserRepository userRepo;
-	@Autowired
-	private roleRepository roleRepo;
+	private UserRepository userRepository;
 	
-	public User registerUser(User user, MultipartFile profileImage) throws IOException
+	public User UpdateUser(User updateUser , String userCode)
 	{
 		
-		
-	//uploading the  user image to local folder 
-		String uploadDir = "uploads/";
-
-		File directory = new File(uploadDir);
-
-		if (!directory.exists()) {
-		    directory.mkdirs();
-		}
-
-		
-	//setting file name for the image
-		String fileName = System.currentTimeMillis() + "_"
-		        + profileImage.getOriginalFilename();
-
-		Path path = Paths.get(uploadDir, fileName);
-
-		Files.write(path, profileImage.getBytes());
-
-		user.setProfileImage(fileName);
-	/*	System.out.println(user);
-	    System.out.println(user.getAddress());
-	    System.out.println(user.getRole());
-	    System.out.println(user.getRole().getId());
-	    
-	*/
-		
-	//setting the role of the user (admin , owner , renter)
-	    Role role = roleRepo.findById(user.getRole().getId())
-	            .orElseThrow(() -> new RuntimeException("Role not found"));
-
-	    user.setRole(role);
-	    if(user.getAddress() != null) {
-
-	        user.getAddress().forEach(address -> {
-	            address.setUser(user);
-	        });
-	        
-	        
-
-	    }
-		return userRepo.save(user);  //sending hte user data to database
+						
+	 User user = userRepository.findByUserCode(userCode)
+			 			.orElseThrow(()-> new RuntimeException("User not found"));
+	 
+	 user.setName(updateUser.getName());
+	 user.setEmail(updateUser.getEmail());
+	 user.setPhone(updateUser.getPhone());
+	 user.setProfileImage(updateUser.getProfileImage());
+	 
+	 return userRepository.save(user);
+	 
+	 
+			 
+	 
 	}
 	
 	
