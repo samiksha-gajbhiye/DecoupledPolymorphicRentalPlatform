@@ -1,9 +1,12 @@
 package com.sg.main.entities;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,6 +48,10 @@ public class User {
 	@OneToMany(mappedBy="user")
 	@JsonManagedReference("user-product")
 	private List<Product> products = new ArrayList<>();
+	@CreationTimestamp
+	private LocalDateTime createdAt;
+	
+
 	
 	public String getPassword() {
 		return password;
@@ -109,6 +116,13 @@ public class User {
 	}
 	public void setProducts(List<Product> products) {
 		this.products = products;
+	}
+	
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
 	public User() {
 		super();
