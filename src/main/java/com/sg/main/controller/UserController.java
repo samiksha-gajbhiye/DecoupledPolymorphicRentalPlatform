@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,8 @@ import com.sg.main.entities.User;
 import com.sg.main.repositories.UserRepository;
 import com.sg.main.services.AuthService;
 import com.sg.main.services.UserService;
+
+import jakarta.transaction.Transactional;
 
 
 
@@ -44,6 +47,7 @@ public class UserController {
 		
 	}
 	
+	@Transactional
 	@PutMapping("/update/{userCode}")
 	public ResponseEntity<User> updateUser(@PathVariable String userCode , @RequestBody	 User user)
 	{
@@ -51,6 +55,16 @@ public class UserController {
 		
 		
 		return  ResponseEntity.ok(updateUser);
+	}
+	
+	@Transactional
+	@DeleteMapping("/delete/{userCode}")
+	public ResponseEntity<String> deleteUser(@PathVariable String userCode  )
+	{
+		String message =userService.deleteuser( userCode);
+		return ResponseEntity.ok(message);
+		
+		
 	}
 	
 }

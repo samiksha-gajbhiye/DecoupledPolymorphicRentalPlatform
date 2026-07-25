@@ -12,5 +12,7 @@ import com.sg.main.entities.User;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
 	public Optional<User> findByUserCode(String userCode);
+	public void deleteByUserCode(String userCode);
+	public   boolean existsByUserCode(String userCode);
 
 }

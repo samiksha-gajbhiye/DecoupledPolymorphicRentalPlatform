@@ -33,12 +33,24 @@ public class UserService {
 	 user.setPhone(updateUser.getPhone());
 	 user.setProfileImage(updateUser.getProfileImage());
 	 
-	 return userRepository.save(user);
-	 
-	 
-			 
+	 return userRepository.save(user); 
 	 
 	}
+	
+	public String deleteuser( String userCode)
+	{
+			if(!userRepository.existsByUserCode(userCode))
+			{
+				throw new RuntimeException("User doesnt exist");
+			}
+			
+			userRepository.deleteByUserCode(userCode);
+		
+			return "user deleted successfully";
+			
+				
+	}
+
 	
 	
 }
