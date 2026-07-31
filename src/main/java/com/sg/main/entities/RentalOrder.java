@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.UUID;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import com.sg.main.entities.enums.PaymentStatus;
@@ -17,6 +20,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 
 @Entity
@@ -31,7 +36,9 @@ public class RentalOrder {
 	@ManyToOne
 	@JoinColumn(name = "productId")
 	private Product product;
-	private String orderCode;
+	@OneToMany(mappedBy = "order")
+	private List<Payment> payment;
+	private UUID orderCode;
 	@CreationTimestamp
 	private LocalDateTime bookingDate;
 	@Column(nullable = false )
