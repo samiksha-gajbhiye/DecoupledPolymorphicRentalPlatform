@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Update User</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#f4f4f4;
+        }
+
+        .container{
+            width:400px;
+            margin:50px auto;
+            background:white;
+            padding:20px;
+            border-radius:8px;
+            box-shadow:0 0 10px rgba(0,0,0,.2);
+        }
+
+        input{
+            width:100%;
+            padding:10px;
+            margin:10px 0;
+            box-sizing:border-box;
+        }
+
+        button{
+            width:100%;
+            padding:10px;
+            cursor:pointer;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h2>Update User</h2>
+
+<form id="updateForm">
+
+    <input type="text" id="userCode" placeholder="User Code" required>
+
+    <input type="text" id="name" placeholder="Name" required>
+
+    <input type="email" id="email" placeholder="Email" required>
+
+    <input type="number" id="phone" placeholder="Phone" required>
+
+    <button type="submit">Update</button>
+
+</form>
+
+<p id="result"></p>
+
+</div>
+
+<script>
+
+document.getElementById("updateForm").addEventListener("submit", function(e){
+
+    e.preventDefault();
+
+    const userCode = document.getElementById("userCode").value;
+
+    const user = {
+
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value
+
+    };
+
+    fetch("http://localhost:8080/register/update/" + userCode,{
+
+        method:"PUT",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify(user)
+
+    })
+    .then(res => res.json())
+    .then(data =>{
+
+        document.getElementById("result").innerHTML =
+        "User updated successfully.";
+
+        console.log(data);
+
+    })
+    .catch(err => console.error(err));
+
+});
+
+</script>
+
+</body>
+</html>

@@ -66,8 +66,6 @@ public class Product {
 	private BigDecimal securityDeposit;
 	@Column(nullable = false)
 	private int quantity=1;
-	@OneToMany(mappedBy = "product")
-	private RentalOrder rentalOrder;
 	@Enumerated(EnumType.STRING)
 	private AvailabilityStatus availability;
 	@OneToMany(

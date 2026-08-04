@@ -44,7 +44,7 @@ public class User {
 	@JoinColumn(name="roleId")
 	private Role role;
 	@OneToMany(mappedBy = "customer")
-	private RentalOrder rentalOrder;
+	private List<RentalOrder> rentalOrder;
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Address> address= new ArrayList<>();
 	@OneToMany(mappedBy="user")

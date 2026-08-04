@@ -21,7 +21,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 
 @Entity
@@ -33,9 +32,7 @@ public class RentalOrder {
 	@ManyToOne
 	@JoinColumn(name = "userId")
 	private User customer ;
-	@ManyToOne
-	@JoinColumn(name = "productId")
-	private Product product;
+	
 	@OneToMany(mappedBy = "order")
 	private List<Payment> payment;
 	private UUID orderCode;
@@ -85,10 +82,10 @@ public class RentalOrder {
 	public void setCustomer(User customer) {
 		this.customer = customer;
 	}
-	public String getOrderCode() {
+	public UUID getOrderCode() {
 		return orderCode;
 	}
-	public void setOrderCode(String orderCode) {
+	public void setOrderCode(UUID orderCode) {
 		this.orderCode = orderCode;
 	}
 	public LocalDateTime getBookingDate() {
@@ -140,12 +137,7 @@ public class RentalOrder {
 		this.status = status;
 	}
 	
-	public Product getProduct() {
-		return product;
-	}
-	public void setProduct(Product product) {
-		this.product = product;
-	}
+	
 	public PaymentStatus getPaymentStatus() {
 		return paymentStatus;
 	}
