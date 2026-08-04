@@ -20,8 +20,7 @@ public class DemoRentalServicesApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DemoRentalServicesApplication.class, args);
 	
-		User user = new User();
-		user.toString();
+	
 		
 		
 		
