@@ -19,6 +19,8 @@ import com.sg.main.entities.User;
 import com.sg.main.repositories.UserRepository;
 import com.sg.main.repositories.roleRepository;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Service
 public class AuthService {
 
@@ -26,6 +28,9 @@ public class AuthService {
 	private UserRepository userRepo;
 	@Autowired
 	private roleRepository roleRepo;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	public User registerUser(User user, MultipartFile profileImage) throws IOException
 	{
@@ -74,6 +79,7 @@ public class AuthService {
 	        user.setUserCode(userCode);
 
 	    }
+	    user.setPassword(passwordEncoder.encode(user.getPassword()));
 		return userRepo.save(user);  //sending hte user data to database
 	}
 	

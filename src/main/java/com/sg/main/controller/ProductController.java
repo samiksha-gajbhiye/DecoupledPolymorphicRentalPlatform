@@ -20,36 +20,42 @@ import com.sg.main.entities.ProductImage;
 import com.sg.main.services.ProductService;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.io.IOException;
+import java.util.List;
 
-@CrossOrigin(origins = "*")
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.sg.main.services.ProductService;
+
 @RestController
 @RequestMapping("/product")
 public class ProductController {
-
 	@Autowired
-	ProductService productService ;
-	
-	
-	
-	@PostMapping(value="/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public Product addProduct(
+	private ProductService productService;
+
+	@PostMapping("/register")
+	public Product registerProduct(
 	        @RequestPart("product") Product product,
-	        @RequestPart("images") List<MultipartFile> images) throws IOException {
-
-	    return productService.registerProduct(product, images);
-		
+	        @RequestPart("productImages") List<MultipartFile> productImages)
+	        throws IOException {
+		 return productService.registerProduct(product, productImages);
 	}
-	
 
-	
-	
+	@PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public Product addProduct(@RequestPart("product") Product product,
+			@RequestPart("images") List<MultipartFile> images) throws IOException {
+
+		return productService.registerProduct(product, images);
+
+	}
+
 	@GetMapping("/title/{title}")
-	public ResponseEntity<List<Product>> getProductByTitle(@PathVariable String title)
-	{
-		
-		
+	public ResponseEntity<List<Product>> getProductByTitle(@PathVariable String title) {
+
 		List<Product> product = productService.GetProductDetailsByName(title);
 		return ResponseEntity.ok(product);
-		
+
 	}
 }

@@ -131,6 +131,11 @@ product.setProductCode(productCode);
 	        img.setImageUrl(fileName);
 
 	        img.setPrimaryImage(firstImage);
+	        img.setFileType(image.getContentType());
+	        img.setFileSize(image.getSize());
+
+
+	        img.setPrimaryImage(firstImage);
 	        img.setDisplayOrder(displayOrder++);
 
 	        img.setFileSize(image.getSize());
