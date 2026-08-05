@@ -28,7 +28,6 @@ import jakarta.transaction.Transactional;
 
 
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/register")
 public class UserController {
