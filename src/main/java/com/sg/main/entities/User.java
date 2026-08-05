@@ -42,7 +42,9 @@ public class User {
 	private String profileImage;
 	@ManyToOne
 	@JoinColumn(name="roleId")
-	private Role role;;
+	private Role role;
+	@OneToMany(mappedBy = "customer")
+	private List<RentalOrder> rentalOrder;
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Address> address= new ArrayList<>();
 	@OneToMany(mappedBy="user")
