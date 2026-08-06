@@ -1,5 +1,6 @@
 package com.sg.main.entities;
 
+ import com.sg.main.entities.enums.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

@@ -10,9 +10,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sg.main.dto.LoginRequest;
+import com.sg.main.dto.LoginResponse;
 import com.sg.main.entities.Address;
 import com.sg.main.entities.Role;
 import com.sg.main.entities.User;
@@ -26,10 +30,19 @@ public class AuthService {
 	private UserRepository userRepo;
 	@Autowired
 	private roleRepository roleRepo;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	public User registerUser(User user, MultipartFile profileImage) throws IOException
 	{
 		
+		
+		if(userRepo.findByEmail(user.getEmail()).isPresent()) {
+		    throw new RuntimeException("Email already exists");
+		}
+
+	    user.setPassword(passwordEncoder.encode(user.getPassword()));
+		System.out.println(user.getPassword());
 		
 	//uploading the  user image to local folder 
 		String uploadDir = "uploads/";
@@ -62,6 +75,11 @@ public class AuthService {
 	            .orElseThrow(() -> new RuntimeException("Role not found"));
 
 	    user.setRole(role);
+	    
+	    String userCode = "USR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+        user.setUserCode(userCode);
+	    
 	    if(user.getAddress() != null) {
 
 	        user.getAddress().forEach(address -> {
@@ -69,16 +87,30 @@ public class AuthService {
 	        });
 	        
 	        
-	        String userCode = "USR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-
-	        user.setUserCode(userCode);
+	        
 
 	    }
+	    
+	    
 		return userRepo.save(user);  //sending hte user data to database
 	}
 	
+	//user Login
 	
-	//Update the user information 
+	public LoginResponse LoginUser(LoginRequest request)
+	{
+		User user = userRepo.findByEmail(request.getEmail())
+				.orElseThrow(()-> new RuntimeException("User not found"));
+		
+		if(!passwordEncoder.matches(request.getPassword(), user.getPassword()))
+		{
+			throw new RuntimeException("Invalid password");
+		}
+		
+		return  new LoginResponse("Login Successful",user.getUserCode(),user.getRole().getRoleName());
+	}
+	
+	 
 	
 	
 }

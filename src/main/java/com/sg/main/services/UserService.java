@@ -28,7 +28,7 @@ public class UserService {
 	 User user = userRepository.findByUserCode(userCode)
 			 			.orElseThrow(()-> new RuntimeException("User not found"));
 	 
-	 user.setName(updateUser.getName());
+	 user.setName(updateUser.gtName());
 	 user.setEmail(updateUser.getEmail());
 	 user.setPhone(updateUser.getPhone());
 	 user.setProfileImage(updateUser.getProfileImage());

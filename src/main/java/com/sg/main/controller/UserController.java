@@ -30,22 +30,15 @@ import jakarta.transaction.Transactional;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/register")
+@RequestMapping("/user")
 public class UserController {
 
 	@Autowired
 	private UserService userService;
 	
-	@Autowired
-	private AuthService authService;
 	
-	@PostMapping(value="/user" , consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE )
-	public User register(@RequestPart("user") User user, @RequestPart("profileImage") MultipartFile profileImage) throws IOException
-	{
-		return authService.registerUser(user, profileImage);
-		
-		
-	}
+	
+	
 	
 	@Transactional
 	@PutMapping("/update/{userCode}")
