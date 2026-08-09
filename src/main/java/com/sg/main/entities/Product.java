@@ -66,7 +66,6 @@ public class Product {
 	private BigDecimal securityDeposit;
 	@Column(nullable = false)
 	private int quantity=1;
-	
 	@Enumerated(EnumType.STRING)
 	private AvailabilityStatus availability;
 	@OneToMany(

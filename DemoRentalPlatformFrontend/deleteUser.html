@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Delete User</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f4f4f4;
+}
+
+.container{
+    width:350px;
+    margin:120px auto;
+    background:white;
+    padding:20px;
+    border-radius:8px;
+    box-shadow:0 0 10px gray;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    background:red;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+button:hover{
+    background:darkred;
+}
+
+#message{
+    margin-top:15px;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h2>Delete User</h2>
+
+<input type="text" id="userCode" placeholder="Enter User Code">
+
+<button onclick="deleteUser()">Delete User</button>
+
+<p id="message"></p>
+
+</div>
+
+<script>
+
+function deleteUser(){
+
+    const userCode = document.getElementById("userCode").value;
+
+    fetch("http://localhost:8080/register/delete/" + userCode,{
+        method:"DELETE"
+    })
+    .then(response => response.text())
+    .then(data=>{
+        document.getElementById("message").innerHTML=data;
+    })
+    .catch(error=>{
+        document.getElementById("message").innerHTML="Error deleting user";
+        console.error(error);
+    });
+
+}
+
+</script>
+
+</body>
+</html>

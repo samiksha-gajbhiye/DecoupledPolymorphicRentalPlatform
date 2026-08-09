@@ -18,7 +18,7 @@ public class RedisTestController {
 
 	    @PostMapping("/save")
 	    public String save() {
-	        redisService.save("name", "Kunal");
+	        redisService.save("name", "Samiksha");
 	        return "Data saved in Redis";
 	    }
 

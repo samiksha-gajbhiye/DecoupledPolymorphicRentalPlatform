@@ -23,6 +23,7 @@ import com.sg.main.repositories.ProductImageRepository;
 import com.sg.main.repositories.ProductRepository;
 import com.sg.main.repositories.UserRepository;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.criteria.Path;
 
 @Service
@@ -36,6 +37,9 @@ public class ProductService {
 	private UserRepository userRepository;
 	@Autowired
 	private CategoryRepository categoryRepository;
+	
+	
+	
 	
 	
 	// Method to register product 
