@@ -15,11 +15,15 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Replace with your actual frontend URL(s). Add more as needed
-        // (e.g. your deployed frontend domain once you have one).
         config.setAllowedOrigins(List.of(
-                "http://localhost:3000",   
-                "http://localhost:5173"    
+                "http://localhost:3000",   // React dev server (Create React App)
+                "http://localhost:5173",   // Vite dev server
+                "http://localhost:5500",   // VS Code Live Server default
+                "http://127.0.0.1:5500",   // Live Server sometimes uses 127.0.0.1 instead of localhost
+                "http://localhost:8081",   // just in case a second backend/frontend uses this
+                "null"                     // ONLY for local testing by opening an HTML file directly.
+                                            // REMOVE this line before deploying to production - it's
+                                            // not a real security boundary and shouldn't ship.
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

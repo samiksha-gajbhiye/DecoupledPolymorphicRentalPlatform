@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Role {
@@ -19,6 +20,7 @@ public class Role {
 	private String roleName;
 	
 	@OneToMany(mappedBy = "role")
+	@JsonIgnore // prevents infinite recursion: User -> role -> users -> each user's role -> ...
 	private List<User> users = new ArrayList<>();
 	
 	
@@ -35,6 +37,7 @@ public class Role {
 	
 	
 	
+	@JsonIgnore // prevents infinite recursion: User -> role -> user -> each user's role -> ...
 	public List<User> getUser() {
 		return users;
 	}

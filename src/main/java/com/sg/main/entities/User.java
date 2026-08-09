@@ -9,7 +9,6 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import io.micrometer.common.lang.Nullable;
@@ -35,8 +34,8 @@ public class User {
 	private String name;
 	private String email;
 	private long phone;
-	@JsonIgnore
-	private String password;
+	@com.fasterxml.jackson.annotation.JsonProperty(access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+	   private String password;
 	@Column(nullable = false)
 	private String userCode;
 	private String profileImage;

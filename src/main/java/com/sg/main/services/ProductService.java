@@ -161,4 +161,9 @@ product.setProductCode(productCode);
 		return productRepository.findByTitleIgnoreCase(title) ;
 	}
 	
+	 public Product getProductById(int productId) {
+	        return productRepository.findById(productId)
+	                .orElseThrow(() -> new RuntimeException("Product not found: " + productId));
+	    }
+	
 }
