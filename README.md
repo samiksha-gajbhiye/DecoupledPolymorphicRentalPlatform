@@ -23,53 +23,5 @@ Process and validate uploaded rental images
 Support intelligent pricing and ranking
 Maintain independently deployable application components
 
-System Architecture
-                                      ┌───────────────────────┐
-                                      │       Frontend        │
-                                      │    Web Application     │
-                                      └───────────┬───────────┘
-                                                  │
-                                                  │ REST / HTTP
-                                                  ▼
-                         ┌─────────────────────────────────────────┐
-                         │          Spring Boot Backend            │
-                         │                                         │
-                         │  Authentication                         │
-                         │  User Management                         │
-                         │  Rental Management                        │
-                         │  Business Logic                          │
-                         │  REST APIs                               │
-                         └───────────────┬─────────────────────────┘
-                                         │
-                       ┌─────────────────┼──────────────────┐
-                       │                 │                  │
-                       ▼                 ▼                  ▼
-                ┌─────────────┐   ┌─────────────┐   ┌─────────────┐
-                │    MySQL    │   │    Redis    │   │    Email    │
-                │  Database   │   │    Cache    │   │   Service   │
-                └─────────────┘   └─────────────┘   └─────────────┘
-                                         
-                                         │
-                                         │ AI / ML Requests
-                                         ▼
-                         ┌─────────────────────────────────────────┐
-                         │          Python AI/ML Service           │
-                         │              DemoRental                │
-                         │                                         │
-                         │  Recommendation                         │
-                         │  Semantic Search                         │
-                         │  Fraud Detection                         │
-                         │  Image Processing                        │
-                         │  Dynamic Pricing                         │
-                         │  Analytics & Forecasting                 │
-                         └───────────────┬─────────────────────────┘
-                                         │
-                     ┌───────────────────┼───────────────────┐
-                     │                   │                   │
-                     ▼                   ▼                   ▼
-               ┌───────────┐       ┌───────────┐       ┌───────────┐
-               │   FAISS   │       │ ML Models │       │  Vector   │
-               │  Index    │       │  YOLO/CLIP│       │ Database  │
-               └───────────┘       └───────────┘       └───────────┘
 
                
