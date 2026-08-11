@@ -16,12 +16,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	public Optional<User>  findByEmail(String email);
 	public Optional<User> findByName(String name);
 	public Optional<User> findById(int id);
-
-
+	public Optional<User> findByUserCode(String userCode);
+	boolean existsByEmail(String email);
 	
 	
 //delete user by Usercode 
-	public Optional<User> findByUserCode(String userCode);
+	
 	public void deleteByUserCode(String userCode);
 	public   boolean existsByUserCode(String userCode);
 

@@ -1,5 +1,6 @@
 package com.sg.main.services;
 
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +11,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +25,8 @@ import com.sg.main.entities.Role;
 import com.sg.main.entities.User;
 import com.sg.main.repositories.UserRepository;
 import com.sg.main.repositories.roleRepository;
+import com.sg.main.security.JwtUtil;
+
 
 @Service
 public class AuthService {
@@ -32,6 +37,10 @@ public class AuthService {
 	private roleRepository roleRepo;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	@Autowired
+	 private JwtUtil jwtUtil; 
 	
 	public User registerUser(User user, MultipartFile profileImage) throws IOException
 	{
@@ -97,20 +106,33 @@ public class AuthService {
 	
 	//user Login
 	
-	public LoginResponse LoginUser(LoginRequest request)
-	{
-		User user = userRepo.findByEmail(request.getEmail())
-				.orElseThrow(()-> new RuntimeException("User not found"));
-		
-		if(!passwordEncoder.matches(request.getPassword(), user.getPassword()))
-		{
-			throw new RuntimeException("Invalid password");
-		}
-		
-		return  new LoginResponse("Login Successful",user.getUserCode(),user.getRole().getRoleName());
+	public LoginResponse LoginUser(LoginRequest request) {
+
+
+	    Authentication authentication =
+	            authenticationManager.authenticate(
+	                    new UsernamePasswordAuthenticationToken(
+	                            request.getEmail(),
+	                            request.getPassword()
+	                    )
+	            );
+
+	    String token = jwtUtil.generateToken(request.getEmail());
+
+	    String role = authentication.getAuthorities()
+	            .stream()
+	            .findFirst()
+	            .map(authority -> authority.getAuthority())
+	            .orElse("ROLE_USER");
+
+	    return new LoginResponse(
+	            "Login successful",
+	            token,
+	            authentication.getName(),
+	            role
+	);
+	    
+	   
 	}
-	
-	 
-	
 	
 }

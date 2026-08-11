@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +30,7 @@ public class UserService {
 	 User user = userRepository.findByUserCode(userCode)
 			 			.orElseThrow(()-> new RuntimeException("User not found"));
 	 
-	 user.setName(updateUser.gtName());
+	 user.setName(updateUser.getName());
 	 user.setEmail(updateUser.getEmail());
 	 user.setPhone(updateUser.getPhone());
 	 user.setProfileImage(updateUser.getProfileImage());
@@ -50,6 +52,18 @@ public class UserService {
 			
 				
 	}
+	
+	public Optional<User> findUser(String email)
+	{
+		if(!userRepository.existsByEmail(email))
+		{
+			throw new UsernameNotFoundException("USer does not exist");
+		}
+			Optional<User> user = userRepository.findByEmail(email);
+			
+			return user;
+	}
+
 
 	
 	

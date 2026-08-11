@@ -3,6 +3,8 @@ package com.sg.main.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,12 +21,19 @@ public class Role {
 	private String roleName;
 	
 	@OneToMany(mappedBy = "role")
+	@JsonIgnore
 	private List<User> users = new ArrayList<>();
 	
 	
 	
 	public int getId() {
 		return id;
+	}
+	public List<User> getUsers() {
+		return users;
+	}
+	public void setUsers(List<User> users) {
+		this.users = users;
 	}
 	public void setId(int id) {
 		this.id = id;
@@ -34,7 +43,7 @@ public class Role {
 	}
 	
 	
-	
+	@JsonIgnore
 	public List<User> getUser() {
 		return users;
 	}

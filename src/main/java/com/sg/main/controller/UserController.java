@@ -2,9 +2,12 @@ package com.sg.main.controller;
 
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,4 +63,19 @@ public class UserController {
 		
 	}
 	
+	@Transactional
+	@GetMapping("/getUser")
+	public ResponseEntity<User> GetUser(Authentication authenticate)
+	{
+	    String email = authenticate.getName();
+
+	    User user = userService.findUser(email)
+	            .orElseThrow(() ->
+	                    new UsernameNotFoundException(
+	                            "User does not exist"
+	                    )
+	            );
+
+	    return ResponseEntity.ok(user);
+	}
 }

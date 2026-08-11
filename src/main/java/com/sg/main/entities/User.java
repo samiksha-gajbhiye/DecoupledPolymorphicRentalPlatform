@@ -47,11 +47,14 @@ import io.micrometer.common.lang.Nullable;
 		@JoinColumn(name="roleId")
 		private Role role;
 		@OneToMany(mappedBy = "customer")
+		@JsonIgnore
 		private List<RentalOrder> rentalOrder;
 		@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+		@JsonIgnore
 		private List<Address> address= new ArrayList<>();
 		@OneToMany(mappedBy="user")
-		@JsonManagedReference("user-product")
+		
+		@JsonIgnore
 		private List<Product> products = new ArrayList<>();
 		@CreationTimestamp
 		private LocalDateTime createdAt;
@@ -70,7 +73,7 @@ import io.micrometer.common.lang.Nullable;
 		public void setId(int id) {
 			this.id = id;
 		}
-		public String gtName() {
+		public String getName() {
 			return name;
 		}
 		public void setName(String name) {
