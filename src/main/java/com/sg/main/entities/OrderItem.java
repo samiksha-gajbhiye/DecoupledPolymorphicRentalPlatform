@@ -68,6 +68,12 @@ public class OrderItem {
 	public void setSubTotal(BigDecimal subTotal) {
 		this.subTotal = subTotal;
 	}
+	public long getRentalDuration() {
+		return rentalDuration;
+	}
+	public void setRentalDuration(long rentalDuration) {
+		this.rentalDuration = rentalDuration;
+	}
 	public OrderItem() {
 		super();
 		// TODO Auto-generated constructor stub
