@@ -76,7 +76,7 @@ public class SecurityConfig   {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/auth/**",
-                    "/product/all",
+                    "/product/**",
                     "/images/**",
                     "/error"
                    

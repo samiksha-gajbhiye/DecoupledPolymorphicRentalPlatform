@@ -5,7 +5,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.sg.main.entities.Product;
 import com.sg.main.entities.RentalOrder;
+import com.sg.main.entities.User;
 import com.sg.main.entities.enums.PaymentStatus;
 
 import java.math.BigDecimal;
@@ -24,6 +26,8 @@ public interface RentalOrderRepository extends JpaRepository<RentalOrder, Intege
 
 	    //Get rentalOrder by 
 	    RentalOrder getOrderById(int orderId);
+	    
+	    
 
 	    RentalOrder getOrderByOrderCode(UUID orderCode);
 
@@ -58,5 +62,7 @@ public interface RentalOrderRepository extends JpaRepository<RentalOrder, Intege
 	    String deleteOrder(UUID orderCode);
 
 	}
+
+	public Optional<RentalOrder>  findByOrderCode(UUID orderCode);
 	
 }

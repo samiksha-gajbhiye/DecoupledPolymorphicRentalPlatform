@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.sg.main.entities.Category;
 import com.sg.main.entities.Product;
 import com.sg.main.entities.User;
 
@@ -19,13 +20,23 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	
 	//search product by different attribute 
 	 List<Product> findByTitleIgnoreCase(String title);
-	 List<Product> findByProductCode(String productCode);
+	 Product findByProductCode(String productCode);
 	 List<Product> findByAvailability(AvailabilityStatus availability);
 	 List<Product> findByTitle(String title);
 	 List<Product> findByUser(User user);
 	 List<Product> findByBrand(String brand);
 	 List<Product> findByDescription(String description);
 	 List<Product> findByLocation(String location);
+	 List<Product> findByCategoryName(String category);
+	 boolean existsByCategory_Name(String categoryName);
+	 List<Product> findByCategory_Name(String categoryName);
+	 
+	 //check if exist by attribute 
+	
+	 
+	 
+	 
+	 
 	 
 	 
 	 

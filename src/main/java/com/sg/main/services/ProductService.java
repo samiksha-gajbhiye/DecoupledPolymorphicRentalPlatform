@@ -23,6 +23,7 @@ import com.sg.main.repositories.ProductImageRepository;
 import com.sg.main.repositories.ProductRepository;
 import com.sg.main.repositories.UserRepository;
 
+import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.criteria.Path;
 
@@ -159,5 +160,23 @@ product.setProductCode(productCode);
 		
 		return productRepository.findByTitleIgnoreCase(title) ;
 	}
+	
+	public List<Product> findAllProductByCategory(String categoryName) {
+
+	    if (!productRepository.existsByCategory_Name(categoryName)) {
+	        throw new RuntimeException("No product exist in this category yet");
+	    }
+
+	    return productRepository.findByCategory_Name(categoryName);
+	}
+
+
+	public Product findProductByProductCode(String productCode) {
+		// TODO Auto-generated method stub
+		return productRepository.findByProductCode(productCode);
+	}
+
+
+	
 	
 }

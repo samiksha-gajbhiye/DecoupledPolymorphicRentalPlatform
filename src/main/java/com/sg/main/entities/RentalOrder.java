@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,8 +23,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class RentalOrder {
 
 	@Id
@@ -37,7 +46,7 @@ public class RentalOrder {
 	private List<Payment> payment;
 	private UUID orderCode;
 	@CreationTimestamp
-	private LocalDateTime bookingDate;
+	private LocalDate bookingDate;
 	@Column(nullable = false )
 	private LocalDate rentalStart;
 	@Column(nullable = false)
@@ -68,7 +77,9 @@ public class RentalOrder {
 	private LocalDateTime updatedAt;
 	private LocalDateTime cancelledAt;
 	private String returnRemarks;
-	
+	@Builder.Default
+	@OneToMany
+	private List<OrderItem> orderItem = new ArrayList<>();
 	
 	public int getOrderId() {
 		return orderId;
@@ -88,11 +99,11 @@ public class RentalOrder {
 	public void setOrderCode(UUID orderCode) {
 		this.orderCode = orderCode;
 	}
-	public LocalDateTime getBookingDate() {
+	public LocalDate getBookingDate() {
 		return bookingDate;
 	}
-	public void setBookingDate(LocalDateTime bookingDate) {
-		this.bookingDate = bookingDate;
+	public void setBookingDate(LocalDate localDate) {
+		this.bookingDate = localDate;
 	}
 	public LocalDate getRentalStart() {
 		return rentalStart;
@@ -200,20 +211,20 @@ public class RentalOrder {
 	public void setReturnRemarks(String returnRemarks) {
 		this.returnRemarks = returnRemarks;
 	}
-	@Transient
-	public long getRentalDuration() {
-
-	    if (rentalStart == null || rentalEnd == null) {
-	        return 0;
-	    }
-
-	    if(rentalEnd.isBefore(rentalStart)){
-	        throw new IllegalArgumentException("Rental end date cannot be before rental start date");
-	    }
-
-	    return ChronoUnit.DAYS.between(rentalStart, rentalEnd);
-	}
+	 
 	
+	public List<Payment> getPayment() {
+		return payment;
+	}
+	public void setPayment(List<Payment> payment) {
+		this.payment = payment;
+	}
+	public List<OrderItem> getOrderItem() {
+		return orderItem;
+	}
+	public void setOrderItem(List<OrderItem> orderItem) {
+		this.orderItem = orderItem;
+	}
 	public RentalOrder() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -225,6 +236,7 @@ public class RentalOrder {
 				+ ", subTotal=" + subTotal + ", discount=" + discount + ", deposit=" + deposit + ", grandTotal="
 				+ grandTotal + ", status=" + status + "]";
 	}
+	
 	
 	
 	

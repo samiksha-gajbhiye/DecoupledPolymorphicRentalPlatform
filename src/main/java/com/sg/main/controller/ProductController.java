@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sg.main.entities.Category;
 import com.sg.main.entities.Product;
 import com.sg.main.entities.ProductImage;
 import com.sg.main.services.ProductService;
@@ -47,10 +48,20 @@ public class ProductController {
 	@GetMapping("/title/{title}")
 	public ResponseEntity<List<Product>> getProductByTitle(@PathVariable String title)
 	{
-		
+		System.out.println("Reach controller");
 		
 		List<Product> product = productService.GetProductDetailsByName(title);
 		return ResponseEntity.ok(product);
 		
+	}
+	
+	@GetMapping("/category/{category}")
+	public ResponseEntity<List<Product>> findByCategory(
+	        @PathVariable String category) {
+
+	    List<Product> products =
+	            productService.findAllProductByCategory(category);
+
+	    return ResponseEntity.ok(products);
 	}
 }
