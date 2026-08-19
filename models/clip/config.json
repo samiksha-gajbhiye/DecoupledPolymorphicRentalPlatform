@@ -1,0 +1,6 @@
+{
+    "model_name": "ViT-B-32",
+    "pretrained": "openai",
+    "device": "cuda",
+    "image_size": 224
+}

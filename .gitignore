@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# Virtual environment
+venv/
+env/
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+# Logs
+logs/
+*.log
+
+# Uploaded / generated files at runtime
+uploads/
+tmp/
+
+# Model weights and caches — large binaries, don't belong in git
+models/clip/cache/
+models/clip/**/*.safetensors
+models/yolo/weights/*.pt
+models/sentence_transformers/cache/
+models/custom/checkpoints/
+models/custom/exported/
+app/ml/checkpoints/
+app/ml/embeddings/
+app/ml/vector_db/
+app/ml/trained_models/
+
+# Test/debug caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

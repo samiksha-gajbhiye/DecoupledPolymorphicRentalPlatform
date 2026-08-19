@@ -1,0 +1,7 @@
+{
+    "model_name": "yolo11n.pt",
+    "device": "cuda",
+    "confidence": 0.25,
+    "iou_threshold": 0.45,
+    "max_detections": 100
+}
