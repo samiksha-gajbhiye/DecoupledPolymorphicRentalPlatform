@@ -8,6 +8,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def _require_env(var_name: str) -> str:
+    value = os.environ.get(var_name)
+    if not value:
+        raise RuntimeError(
+            f"Missing required environment variable '{var_name}'.\n"
+            f"Add it to your .env file at the project root, e.g.:\n"
+            f"  {var_name}=some-long-random-string\n"
+            f"(For local dev, any random string works — just don't commit it.)"
+        )
+    return value
+
 class AppConfig(BaseModel):
     name: str
     version: str
@@ -98,7 +109,7 @@ class Settings(BaseSettings):
     ai: AIConfig = AIConfig()
 
     security: SecurityConfig = SecurityConfig(
-        jwt_secret=os.environ["JWT_SECRET"],
+        jwt_secret=_require_env("JWT_SECRET"),
         jwt_algorithm="HS256",
         access_token_expire=36000000
     )

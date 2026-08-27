@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from app.config.logger import logger
 from app.config.settings import settings
 from app.models.image import ImageAnalysis, ProcessingStatus
-from app.schemas.response import ImageData, ImageResponse
+from app.schemas.response import DuplicateData, DuplicateResponse, ImageData, ImageResponse
 from app.services.image.blur_detection import BlurDetector
 from app.services.image.classifier import ImageClassifier
 from app.services.image.compressor import ImageCompressor
@@ -21,7 +21,7 @@ from app.services.image.duplicate import DuplicateDetector
  
 class ImageService:
     """Coordinates upload, storage, AI processing, and retrieval of image analyses."""
- 
+
     # Loaded once per process, not per request — CLIP/YOLO-style model
     # loads are expensive. Swap for shared/cached singletons via DI later.
     _classifier = ImageClassifier()
@@ -32,7 +32,9 @@ class ImageService:
     def __init__(self, db: Session) -> None:
         self.db = db
  
+    # ------------------------------------------------------------------
     # Upload
+    # ------------------------------------------------------------------
     async def upload_image(
         self,
         file: UploadFile,
@@ -156,7 +158,37 @@ class ImageService:
                 detail="Image processing failed.",
             ) from exc
  
+    # Duplicate comparison
+    async def compare_images(self, image_id_a: int, image_id_b: int) -> DuplicateResponse:
+        record_a = self._get_or_404(image_id_a)
+        record_b = self._get_or_404(image_id_b)
+ 
+        for record in (record_a, record_b):
+            if not record.image_url or not Path(record.image_url).exists():
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Stored image file is missing for analysis id={record.id}.",
+                )
+ 
+        image_a = Image.open(Path(record_a.image_url))
+        image_b = Image.open(Path(record_b.image_url))
+ 
+        result = self._duplicate_detector.compare(image_a, image_b)
+ 
+        logger.info(
+            f"Compared analysis ids {image_id_a} vs {image_id_b}: "
+            f"distance={result['distance']} is_duplicate={result['is_duplicate']}"
+        )
+ 
+        return DuplicateResponse(
+            success=True,
+            message="OK",
+            data=DuplicateData(**result),
+        )
+ 
+    # ------------------------------------------------------------------
     # Retrieval / deletion
+    # ------------------------------------------------------------------
     async def get_analysis(self, analysis_id: int) -> ImageResponse:
         record = self._get_or_404(analysis_id)
         return self._to_response(record)

@@ -39,3 +39,6 @@ app/ml/trained_models/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+#other things
+graphify-out 
