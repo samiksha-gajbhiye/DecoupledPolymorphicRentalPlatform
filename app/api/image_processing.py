@@ -1,23 +1,21 @@
 # Image processing API endpoints
-from pathlib import Path
+#
+# Every endpoint here is stateless: bytes or primitives in, JSON out.
+# Nothing is written to disk or to a database — Java owns all storage,
+# so there are no analysis IDs and no follow-up lookups.
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from sqlalchemy.orm import Session
-
-from app.config.database import get_db
 from app.config.logger import logger
 from app.schemas.common import BaseResponse
-from app.schemas.request import DuplicateCompareRequest, HashCompareRequest, ImageCompressRequest
+from app.schemas.request import HashCompareRequest
 from app.schemas.response import (
     CompressionResponse,
-    DuplicateResponse,
     HashCompareResponse,
     HashResponse,
-    ImageResponse,
     VerifyResponse,
 )
+from app.services.image.compression_service import ImageCompressionService
 from app.services.image.hash_service import ImageHashService
-from app.services.image.image_service import ImageService
 from app.services.image.verification_service import ImageVerificationService
 
 router = APIRouter(prefix="/image", tags=["Image Processing"])
@@ -47,114 +45,6 @@ async def verify_image(file: UploadFile = File(...)) -> VerifyResponse:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to verify image.",
-        ) from exc
-
-
-@router.post(
-    "/upload",
-    response_model=ImageResponse,
-    status_code=status.HTTP_201_CREATED,
-    summary="Upload an image",
-    description="Uploads an image and stores its metadata after validation.",
-)
-async def upload_image(
-    file: UploadFile = File(...),
-    product_id: int | None = None,
-    db: Session = Depends(get_db),
-) -> ImageResponse:
-    logger.info(f"Received image upload request: {file.filename}")
-    try:
-        service = ImageService(db)
-        response = await service.upload_image(file=file, product_id=product_id)
-        logger.info(f"Image uploaded successfully: {file.filename}")
-        return response
-    except HTTPException:
-        raise
-    except Exception as exc:
-        logger.exception("Unexpected error occurred while uploading image.")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to upload image.",
-        ) from exc
-
-
-@router.post(
-    "/process/{analysis_id}",
-    response_model=ImageResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Process an uploaded image",
-    description="Triggers the AI processing pipeline for an uploaded image.",
-)
-async def process_image(analysis_id: int, db: Session = Depends(get_db)) -> ImageResponse:
-    logger.info(f"Processing image analysis ID: {analysis_id}")
-    try:
-        service = ImageService(db)
-        response = await service.process_image(analysis_id=analysis_id)
-        logger.info(f"Image processing completed for analysis ID: {analysis_id}")
-        return response
-    except HTTPException:
-        raise
-    except Exception as exc:
-        logger.exception("Unexpected error occurred during image processing.")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to process image.",
-        ) from exc
-
-
-@router.get(
-    "/{analysis_id}",
-    response_model=ImageResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Retrieve image analysis",
-    description="Returns the AI analysis details for a processed image.",
-)
-async def get_analysis(analysis_id: int, db: Session = Depends(get_db)) -> ImageResponse:
-    logger.info(f"Fetching image analysis ID: {analysis_id}")
-    try:
-        service = ImageService(db)
-        response = await service.get_analysis(analysis_id=analysis_id)
-        logger.info(f"Successfully fetched image analysis ID: {analysis_id}")
-        return response
-    except HTTPException:
-        raise
-    except Exception as exc:
-        logger.exception("Unexpected error occurred while retrieving image analysis.")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve image analysis.",
-        ) from exc
-
-
-@router.post(
-    "/compress/{analysis_id}",
-    response_model=CompressionResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Compress an image",
-    description="Resizes and compresses an already-uploaded image in place, converting it to JPEG.",
-)
-async def compress_image(
-    analysis_id: int,
-    payload: ImageCompressRequest = ImageCompressRequest(),
-    db: Session = Depends(get_db),
-) -> CompressionResponse:
-    logger.info(f"Compressing analysis ID: {analysis_id}")
-    try:
-        service = ImageService(db)
-        response = await service.compress_image(
-            analysis_id=analysis_id,
-            quality=payload.quality,
-            max_width=payload.max_width,
-            max_height=payload.max_height,
-        )
-        return response
-    except HTTPException:
-        raise
-    except Exception as exc:
-        logger.exception("Unexpected error occurred while compressing image.")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to compress image.",
         ) from exc
 
 
@@ -212,55 +102,39 @@ async def compare_image_hashes(payload: HashCompareRequest) -> HashCompareRespon
 
 
 @router.post(
-    "/compare",
-    response_model=DuplicateResponse,
+    "/compress",
+    response_model=CompressionResponse,
     status_code=status.HTTP_200_OK,
-    summary="Compare two images for duplication",
-    description="Compares two already-uploaded images using perceptual hashing and returns a similarity score.",
+    summary="Compress an image (stateless)",
+    description=(
+        "Resizes and compresses an uploaded image to JPEG and returns it base64-encoded "
+        "alongside the size statistics. Nothing is stored — Java decides where, or "
+        "whether, to save the returned bytes."
+    ),
 )
-async def compare_images(
-    payload: DuplicateCompareRequest,
-    db: Session = Depends(get_db),
-) -> DuplicateResponse:
-    logger.info(f"Comparing analysis IDs {payload.image_id_a} vs {payload.image_id_b}")
+async def compress_image(
+    file: UploadFile = File(...),
+    # Sent as multipart form fields, since the image travels in the same request.
+    quality: int = Form(default=80, ge=1, le=100, description="JPEG quality, 1-100."),
+    max_width: int = Form(default=1920, gt=0, description="Maximum output width in pixels."),
+    max_height: int = Form(default=1080, gt=0, description="Maximum output height in pixels."),
+) -> CompressionResponse:
+    logger.info(f"Compressing image: {file.filename} (quality={quality})")
     try:
-        service = ImageService(db)
-        response = await service.compare_images(
-            image_id_a=payload.image_id_a,
-            image_id_b=payload.image_id_b,
+        service = ImageCompressionService()
+        return await service.compress(
+            file,
+            quality=quality,
+            max_width=max_width,
+            max_height=max_height,
         )
-        return response
     except HTTPException:
         raise
     except Exception as exc:
-        logger.exception("Unexpected error occurred while comparing images.")
+        logger.exception("Unexpected error occurred while compressing image.")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to compare images.",
-        ) from exc
-
-
-@router.delete(
-    "/{analysis_id}",
-    response_model=BaseResponse[None],
-    status_code=status.HTTP_200_OK,
-    summary="Delete image analysis",
-    description="Deletes an existing image analysis record.",
-)
-async def delete_analysis(analysis_id: int, db: Session = Depends(get_db)) -> BaseResponse[None]:
-    logger.info(f"Deleting image analysis ID: {analysis_id}")
-    try:
-        service = ImageService(db)
-        await service.delete_analysis(analysis_id=analysis_id)
-        logger.info(f"Image analysis deleted successfully: {analysis_id}")
-        return BaseResponse(success=True, message="Image analysis deleted successfully.", data=None)
-    except HTTPException:
-        raise
-    except Exception as exc:
-        logger.exception("Unexpected error occurred while deleting image analysis.")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to delete image analysis.",
+            detail="Failed to compress image.",
         ) from exc
 
 
@@ -269,16 +143,18 @@ async def delete_analysis(analysis_id: int, db: Session = Depends(get_db)) -> Ba
     response_model=BaseResponse[dict],
     status_code=status.HTTP_200_OK,
     summary="Image service health",
-    description="Returns the operational status of the image processing service.",
+    description=(
+        "Returns the operational status of the image processing service. "
+        "Java polls this to decide whether product verification can go ahead."
+    ),
 )
-async def health_check(db: Session = Depends(get_db)) -> BaseResponse[dict]:
+async def health_check() -> BaseResponse[dict]:
     logger.info("Running image processing health check.")
     try:
-        database_status = db.bind is not None
         return BaseResponse(
             success=True,
             message="Image Processing Service is healthy.",
-            data={"database": database_status, "service": "online"},
+            data={"service": "online", "stateless": True},
         )
     except Exception as exc:
         logger.exception("Health check failed.")

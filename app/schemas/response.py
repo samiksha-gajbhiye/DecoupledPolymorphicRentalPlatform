@@ -33,50 +33,6 @@ class VersionData(BaseModel):
             examples=["1.0.0"],
         ),
     ]
-# Image Processing Response Data
-class ImageData(BaseModel):
-    """
-    Represents metadata extracted from a processed image.
-    """
-    model_config = MODEL_CONFIG
-    filename: Annotated[
-        str,
-        Field(
-            description="Original image filename.",
-            examples=["chair.jpg"],
-        ),
-    ]
-    width: Annotated[
-        int,
-        Field(
-            gt=0,
-            description="Image width in pixels.",
-            examples=[1024],
-        ),
-    ]
-    height: Annotated[
-        int,
-        Field(
-            gt=0,
-            description="Image height in pixels.",
-            examples=[768],
-        ),
-    ]
-    image_format: Annotated[
-        str,
-        Field(
-            description="Detected image format.",
-            examples=["JPEG"],
-        ),
-    ]
-    file_size: Annotated[
-        int,
-        Field(
-            gt=0,
-            description="Image size in bytes.",
-            examples=[524120],
-        ),
-    ]
 # Search Response Data
 class SearchData(BaseModel):
     #Represents the results returned from a marketplace search.
@@ -97,43 +53,6 @@ class RecommendationData(BaseModel):
         Field(
             default_factory=list,
             description="Recommended rental items for the user.",
-        ),
-    ]
-# Duplicate Comparison Response Data
-class DuplicateData(BaseModel):
-    """
-    Represents the result of comparing two images for visual duplication.
-    """
-    model_config = MODEL_CONFIG
-    distance: Annotated[
-        int,
-        Field(
-            ge=0,
-            description="Hamming distance between the two images' perceptual hashes. Lower means more similar.",
-            examples=[3],
-        ),
-    ]
-    similarity: Annotated[
-        float,
-        Field(
-            ge=0.0,
-            le=1.0,
-            description="Normalized similarity score between 0 (completely different) and 1 (identical).",
-            examples=[0.953],
-        ),
-    ]
-    is_duplicate: Annotated[
-        bool,
-        Field(
-            description="Whether the two images are considered duplicates based on the configured threshold.",
-            examples=[True],
-        ),
-    ]
-    threshold: Annotated[
-        int,
-        Field(
-            description="Maximum Hamming distance allowed for two images to be considered duplicates.",
-            examples=[5],
         ),
     ]
 # Image Compression Response Data
@@ -186,6 +105,16 @@ class CompressionData(BaseModel):
         str,
         Field(description="Output image format.", examples=["JPEG"]),
     ]
+    compressed_image_base64: Annotated[
+        str,
+        Field(
+            description=(
+                "The compressed image itself, base64-encoded. Nothing is stored — "
+                "Java decides where, or whether, to save these bytes."
+            ),
+            examples=["/9j/4AAQSkZJRgABAQAAAQABAAD..."],
+        ),
+    ]
 # Fraud Detection Response Data
 class FraudData(BaseModel):
     #Represents fraud detection analysis.
@@ -214,16 +143,6 @@ class HealthResponse(BaseResponse[HealthData]):
 class VersionResponse(BaseResponse[VersionData]):
     """
     Standard response returned by the version endpoint.
-    """
-    model_config = MODEL_CONFIG
-class ImageResponse(BaseResponse[ImageData]):
-    """
-    Standard response returned after successful image processing.
-    """
-    model_config = MODEL_CONFIG
-class DuplicateResponse(BaseResponse[DuplicateData]):
-    """
-    Standard response returned by the duplicate image comparison endpoint.
     """
     model_config = MODEL_CONFIG
 class CompressionResponse(BaseResponse[CompressionData]):

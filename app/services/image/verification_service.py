@@ -14,8 +14,8 @@ from app.services.image.classifier import ImageClassifier
 class ImageVerificationService:
     """One-shot classify + blur check. No database, no disk writes."""
  
-    # Loaded once per process, not per request — same reasoning as
-    # ImageService: CLIP/YOLO-style model loads are expensive.
+    # Loaded once per process, not per request — CLIP-style model loads are
+    # expensive, so they must not happen inside a request handler.
     _classifier = ImageClassifier()
     _blur_detector = BlurDetector()
  
