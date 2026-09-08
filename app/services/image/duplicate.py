@@ -24,44 +24,20 @@ class DuplicateDetector:
     def __init__(
         self,
         threshold: int | None = None,
-        hash_size: int = 8,
+        hash_size: int | None = None,
     ) -> None:
-        """Initialize the duplicate detector.
-
-        Args:
-            threshold:
-                Maximum Hamming distance for two images to be
-                considered duplicates. If omitted, the value from
-                settings.ai.duplicate_threshold is used.
-
-            hash_size:
-                Size of the perceptual hash. The default 8 produces
-                an 8x8 hash containing 64 bits.
-        """
-
         if threshold is not None and threshold < 0:
-            raise ValueError(
-                "Duplicate threshold cannot be negative."
-            )
+            raise ValueError("Duplicate threshold cannot be negative.")
 
-        if hash_size <= 0:
-            raise ValueError(
-                "Hash size must be greater than zero."
-            )
+        if hash_size is not None and hash_size <= 0:
+            raise ValueError("Hash size must be greater than zero.")
 
-        self.threshold = (
-            threshold
-            if threshold is not None
-            else settings.ai.duplicate_threshold
-        )
-
-        self.hash_size = hash_size
+        self.threshold = threshold if threshold is not None else settings.ai.duplicate_threshold
+        self.hash_size = hash_size if hash_size is not None else settings.ai.duplicate_hash_size
 
         logger.info(
-            "DuplicateDetector initialized "
-            "with threshold=%d, hash_size=%d",
-            self.threshold,
-            self.hash_size,
+            f"DuplicateDetector initialized "
+            f"with threshold={self.threshold}, hash_size={self.hash_size}"
         )
 
     def compare(
@@ -113,11 +89,9 @@ class DuplicateDetector:
         }
 
         logger.debug(
-            "Duplicate comparison completed: "
-            "distance=%d, similarity=%.4f, duplicate=%s",
-            distance,
-            similarity,
-            is_duplicate,
+            f"Duplicate comparison completed: "
+            f"distance={distance}, similarity={similarity:.4f}, "
+            f"duplicate={is_duplicate}"
         )
 
         return result

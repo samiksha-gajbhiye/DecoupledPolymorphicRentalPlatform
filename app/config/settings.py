@@ -27,18 +27,6 @@ class AppConfig(BaseModel):
     environment: str
     debug: bool
 
-class DatabaseConfig(BaseModel):
-    host: str
-    port: int
-    username: str
-    password: str
-    database: str
-    url: str
-    pool_size: int = 10
-    max_overflow: int = 20
-    pool_recycle: int = 3600
-    echo: bool = False
-
 class RedisConfig(BaseModel):
     host: str = "localhost"
     port: int = 6379
@@ -60,14 +48,24 @@ class AIConfig(BaseModel):
     yolo_confidence: float = 0.25
     yolo_iou_threshold: float = 0.45
     yolo_max_detections: int = 100
-    blur_threshold: float = 100.0
-    duplicate_threshold: int = 5
+    # Calibrated 2026-08-27: sharp >= 596, blurry <= 386 (measured at 512px, downscale-only)
+    blur_threshold: float = 450.0
+    blur_normalize_edge: int = 512
+    # Calibrated 2026-09-08: same-image variants <= 90, different images >= 110 (hash_size=16)
+    duplicate_threshold: int = 95
+    duplicate_hash_size: int = 16
     embedding_model: str = "all-MiniLM-L6-v2"
     sentence_transformer_directory: Path = Path("models/sentence_transformers")
     vector_database: Path = Path("app/ml/vector_db")
     checkpoint_directory: Path = Path("app/ml/checkpoints")
     model_directory: Path = Path("models")
-    similarity_threshold: float = 0.75
+    # Classification gate. Applied to the total probability mass of the winning
+    # CATEGORY, not to the top-1 label — see ImageClassifier._postprocess for why
+    # a top-1 label probability is not a usable confidence here.
+    # Calibrated 2026-09-04 against test_images/ plus six synthetic junk uploads
+    # (noise, blank, solid grey, a document, a dark smear, an extreme close-up):
+    # real items scored >= 0.9222, junk <= 0.7727.
+    category_confidence_threshold: float = 0.85
     top_k_results: int = 5
     device: str = "cuda"
 
@@ -84,7 +82,13 @@ class LoggingConfig(BaseModel):
     retention: str = "10 days"
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    # env_nested_delimiter lets nested values be overridden from .env without a
+    # code change, e.g. AI__BLUR_THRESHOLD=500 to re-tune the blur gate.
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore",
+        env_nested_delimiter="__",
+    )
 
     application: AppConfig = AppConfig(
         name="Rentify",
@@ -93,15 +97,6 @@ class Settings(BaseSettings):
         api_prefix="/api/v1",
         environment="development",
         debug=True
-    )
-
-    database: DatabaseConfig = DatabaseConfig(
-        host="localhost",
-        port=3306,
-        username="root",
-        password="root",
-        database="rental_db",
-        url="mysql+pymysql://root:root@localhost:3306/rental_db"
     )
 
     redis: RedisConfig = RedisConfig()
