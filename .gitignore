@@ -1,7 +1,7 @@
 # Python
 __pycache__/
 *.pyc
-
+h.py
 # Environment variables
 .env
 
@@ -42,3 +42,5 @@ app/ml/trained_models/
 
 #other things
 graphify-out 
+2026-09-07-155915-this-session-is-being-continued-from-a-previous-c.txt
+2026-09-07-160006-this-session-is-being-continued-from-a-previous-c.txt

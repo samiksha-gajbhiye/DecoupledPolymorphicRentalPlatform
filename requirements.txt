@@ -4,10 +4,6 @@ uvicorn[standard]
 pydantic
 pydantic-settings
 python-dotenv
-sqlalchemy
-alembic
-pymysql
-psycopg
 redis
 python-jose[cryptography]
 passlib[bcrypt]

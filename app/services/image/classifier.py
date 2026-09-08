@@ -89,10 +89,8 @@ class ImageClassifier:
         self._text_features: torch.Tensor | None = None
 
         logger.info(
-            "Initializing OpenCLIP (%s - %s) on %s",
-            self.model_name,
-            self.pretrained,
-            self.device,
+            f"Initializing OpenCLIP ({self.model_name} - {self.pretrained}) "
+            f"on {self.device}"
         )
 
         self._load_model()
@@ -153,8 +151,7 @@ class ImageClassifier:
         self._tokenizer = tokenizer
 
         logger.info(
-            "Loaded OpenCLIP model '%s'.",
-            self.model_name,
+            f"Loaded OpenCLIP model '{self.model_name}'."
         )
 
     def _prepare_text_embeddings(self) -> None:
@@ -186,8 +183,7 @@ class ImageClassifier:
             )
 
         logger.info(
-            "Cached %d CLIP text embeddings.",
-            len(self._labels),
+            f"Cached {len(self._labels)} CLIP text embeddings."
         )
 
     def _warmup_model(self) -> None:
@@ -352,12 +348,63 @@ class ImageClassifier:
 
         return results
 
+    def _category_confidence(
+        self,
+        probabilities: torch.Tensor,
+    ) -> dict[str, float]:
+        """Total probability mass each category attracted.
+
+        Summed over every label in the category, not just the top-k, so the
+        result is a genuine probability distribution over categories.
+        """
+        totals: dict[str, float] = {
+            category: 0.0
+            for category in self.categories
+        }
+
+        for label, probability in zip(
+            self._labels,
+            probabilities.tolist(),
+        ):
+            totals[self._label_to_category[label]] += float(probability)
+
+        return totals
+
     def _postprocess(
         self,
         probabilities: torch.Tensor,
         top_k: int | None = None,
     ) -> dict[str, Any]:
-        """Convert CLIP probabilities into a structured response."""
+        """Convert CLIP probabilities into a structured response.
+
+        The accept/reject decision is made on the winning category's total
+        probability mass, NOT on the top-1 label's probability.
+
+        The reason is that these probabilities come from a softmax over every
+        label in the catalogue, so they measure how alone the winning label is
+        among its neighbours — a property of DEFAULT_CATEGORIES, not of the
+        photo. Two labels for near-identical concepts split the mass between
+        them and both look uncertain even when the model is sure. Measured on
+        this project's test images: television.jpg put 0.6142 on "television"
+        and 0.3809 on "monitor", so the old top-1 gate of 0.75 rejected a
+        correct prediction; car.jpg, whose raw similarity to its label was the
+        *lowest* of all six images, scored 0.9805 purely because "car" has no
+        synonym in the catalogue. Top-1 probability ran opposite to match
+        quality.
+
+        That failure gets worse as the catalogue grows. Adding "smart tv"
+        alongside "television" would split the mass three ways and start
+        rejecting images that used to pass, with no test failing and no
+        obvious connection between editing a label list and TVs no longer
+        verifying. Category mass is immune to it: near-synonyms almost always
+        sit in the same category, so adding one moves mass around inside the
+        category total without changing it. television.jpg scores 0.9970 by
+        that measure. It is also the decision the platform actually needs —
+        a lister picks a category, and nobody needs this service to
+        adjudicate television versus monitor.
+
+        The specific label is still returned, just not used as the gate.
+        """
         top_k = (
             top_k
             if top_k is not None
@@ -372,7 +419,11 @@ class ImageClassifier:
             ),
         )
 
-        threshold = settings.ai.similarity_threshold
+        threshold = settings.ai.category_confidence_threshold
+
+        category_confidence = self._category_confidence(
+            probabilities
+        )
 
         values, indices = torch.topk(
             probabilities,
@@ -401,20 +452,28 @@ class ImageClassifier:
 
         best_prediction = predictions[0]
 
-        if best_prediction["confidence"] < threshold:
+        winning_category_confidence = category_confidence[
+            best_prediction["category"]
+        ]
+
+        if winning_category_confidence < threshold:
             best_prediction = {
                 "label": "Unknown",
                 "category": "Unknown",
-                "confidence": round(
-                    best_prediction["confidence"],
-                    4,
-                ),
+                "confidence": best_prediction["confidence"],
             }
 
         return {
             "label": best_prediction["label"],
             "category": best_prediction["category"],
             "confidence": best_prediction["confidence"],
+            # Reported even when the verdict is Unknown: this is the number
+            # that decided it, so the caller can apply a stricter policy of
+            # its own without re-running inference.
+            "category_confidence": round(
+                winning_category_confidence,
+                4,
+            ),
             "predictions": predictions,
             "model": self.model_name,
             "device": str(self.device),

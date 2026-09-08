@@ -32,9 +32,9 @@ def main():
     checks.append(("application.name", settings.application.name == "Rentify"))
     checks.append(("application.debug is bool", isinstance(settings.application.debug, bool)))
  
-    # --- Database ---
-    checks.append(("database.port is int", isinstance(settings.database.port, int)))
-    checks.append(("database.url starts with mysql", settings.database.url.startswith("mysql")))
+    # --- AI (no Database section: this service is stateless, Java owns storage) ---
+    checks.append(("ai.blur_threshold is float", isinstance(settings.ai.blur_threshold, float)))
+    checks.append(("ai.blur_normalize_edge is positive int", isinstance(settings.ai.blur_normalize_edge, int) and settings.ai.blur_normalize_edge > 0))
  
     # --- Redis (optional, may be None) ---
     if settings.redis is not None:

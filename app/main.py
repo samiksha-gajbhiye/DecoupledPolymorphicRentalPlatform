@@ -2,16 +2,15 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.image_processing import router as image_router
-from app.config.database import database
 from app.config.logger import logger
 from app.config.settings import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # No database or disk setup: this service is stateless by design.
+    # Java owns all storage — see the image endpoints for the contract.
     logger.info(f"Starting {settings.application.name} Service...")
-    database.initialize()
     yield
-    database.shutdown()
     logger.info(f"Shutting down {settings.application.name} Service...")
 
 app = FastAPI(
