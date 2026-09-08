@@ -19,7 +19,7 @@ class ImageVerificationService:
     _classifier = ImageClassifier()
     _blur_detector = BlurDetector()
  
-    async def verify(self, file: UploadFile) -> VerifyResponse:
+    async def verify(self, file: UploadFile, expected_category: str | None = None) -> VerifyResponse:
         raw_bytes = await file.read()
         if not raw_bytes:
             raise HTTPException(
@@ -48,9 +48,16 @@ class ImageVerificationService:
  
         logger.info(
             f"Verified image filename={file.filename} "
-            f"label={classification['label']} blurry={blur_result['is_blurry']}"
+            f"label={classification['label']} "
+            f"category_confidence={classification['category_confidence']:.4f} "
+            f"blurry={blur_result['is_blurry']}"
         )
- 
+
+        matches_expected = None
+        if expected_category:
+            expected = expected_category.strip().lower()
+            matches_expected = expected in (classification["label"].lower(), classification["category"].lower())
+
         return VerifyResponse(
             success=True,
             message="OK",
@@ -58,12 +65,14 @@ class ImageVerificationService:
                 label=classification["label"],
                 category=classification["category"],
                 confidence=classification["confidence"],
+                category_confidence=classification["category_confidence"],
                 is_blurry=blur_result["is_blurry"],
                 blur_score=blur_result["blur_score"],
                 width=image.width,
                 height=image.height,
                 image_format=(image.format or "UNKNOWN").upper(),
                 file_size=len(raw_bytes),
+                matches_expected=matches_expected,
             ),
         )
  

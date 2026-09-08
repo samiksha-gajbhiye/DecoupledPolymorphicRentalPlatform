@@ -32,11 +32,14 @@ router = APIRouter(prefix="/image", tags=["Image Processing"])
         "This is the endpoint Java calls at product registration time."
     ),
 )
-async def verify_image(file: UploadFile = File(...)) -> VerifyResponse:
+async def verify_image(
+    file: UploadFile = File(...),
+    expected_category: str | None = Form(default=None),
+) -> VerifyResponse:
     logger.info(f"Verifying image: {file.filename}")
     try:
         service = ImageVerificationService()
-        response = await service.verify(file)
+        response = await service.verify(file, expected_category=expected_category)
         return response
     except HTTPException:
         raise

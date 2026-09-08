@@ -174,6 +174,22 @@ class VerifyData(BaseModel):
             examples=[0.9123],
         ),
     ]
+    category_confidence: Annotated[
+        float,
+        Field(
+            ge=0.0,
+            le=1.0,
+            description=(
+                "Confidence that the image belongs to the reported category. This, "
+                "not `confidence`, is what decides whether the label is accepted or "
+                "reported as Unknown — a label competing with a near-synonym (television "
+                "vs monitor) splits `confidence` between them while this stays high. "
+                "Reported even when the verdict is Unknown, so a stricter policy can be "
+                "applied on top without another request."
+            ),
+            examples=[0.997],
+        ),
+    ]
     is_blurry: Annotated[
         bool,
         Field(description="Whether the image was flagged as too blurry.", examples=[False]),
@@ -186,6 +202,10 @@ class VerifyData(BaseModel):
     height: Annotated[int, Field(gt=0, examples=[1080])]
     image_format: Annotated[str, Field(examples=["JPEG"])]
     file_size: Annotated[int, Field(ge=0, examples=[482_113])]
+    matches_expected: Annotated[
+        bool | None,
+        Field(description="Whether the predicted label/category matches expected_category. Null if none was supplied.", examples=[True]),
+    ]
 class VerifyResponse(BaseResponse[VerifyData]):
     """
     Standard response returned by the stateless /image/verify endpoint.
