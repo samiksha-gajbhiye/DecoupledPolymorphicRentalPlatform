@@ -1,18 +1,15 @@
 package com.sg.main.repositories;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.sg.main.entities.Product;
 import com.sg.main.entities.RentalOrder;
-import com.sg.main.entities.User;
 import com.sg.main.entities.enums.PaymentStatus;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.UUID;
 
 
 @Repository
@@ -20,14 +17,14 @@ public interface RentalOrderRepository extends JpaRepository<RentalOrder, Intege
 
 	public interface RentalOrderService {
 
-		
+
 		//Create rentalOrder
 	    RentalOrder createRentalOrder(RentalOrder order);
 
-	    //Get rentalOrder by 
+	    //Get rentalOrder by
 	    RentalOrder getOrderById(int orderId);
-	    
-	    
+
+
 
 	    RentalOrder getOrderByOrderCode(UUID orderCode);
 
@@ -64,5 +61,5 @@ public interface RentalOrderRepository extends JpaRepository<RentalOrder, Intege
 	}
 
 	public Optional<RentalOrder>  findByOrderCode(UUID orderCode);
-	
+
 }

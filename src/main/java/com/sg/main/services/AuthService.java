@@ -1,13 +1,10 @@
 package com.sg.main.services;
 
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sg.main.dto.LoginRequest;
 import com.sg.main.dto.LoginResponse;
-import com.sg.main.entities.Address;
 import com.sg.main.entities.Role;
 import com.sg.main.entities.User;
 import com.sg.main.repositories.UserRepository;
@@ -40,20 +36,20 @@ public class AuthService {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	@Autowired
-	 private JwtUtil jwtUtil; 
-	
+	 private JwtUtil jwtUtil;
+
 	public User registerUser(User user, MultipartFile profileImage) throws IOException
 	{
-		
-		
+
+
 		if(userRepo.findByEmail(user.getEmail()).isPresent()) {
 		    throw new RuntimeException("Email already exists");
 		}
 
 	    user.setPassword(passwordEncoder.encode(user.getPassword()));
 		System.out.println(user.getPassword());
-		
-	//uploading the  user image to local folder 
+
+	//uploading the  user image to local folder
 		String uploadDir = "uploads/";
 
 		File directory = new File(uploadDir);
@@ -62,7 +58,7 @@ public class AuthService {
 		    directory.mkdirs();
 		}
 
-		
+
 	//setting file name for the image
 		String fileName = System.currentTimeMillis() + "_"
 		        + profileImage.getOriginalFilename();
@@ -76,36 +72,36 @@ public class AuthService {
 	    System.out.println(user.getAddress());
 	    System.out.println(user.getRole());
 	    System.out.println(user.getRole().getId());
-	    
+
 	*/
-		
+
 	//setting the role of the user (admin , owner , renter)
-	    Role role = roleRepo.findById(user.getRole().getId())
+	    Role role = roleRepo.findByRoleName(user.getRole().getRoleName())
 	            .orElseThrow(() -> new RuntimeException("Role not found"));
 
 	    user.setRole(role);
-	    
+
 	    String userCode = "USR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
         user.setUserCode(userCode);
-	    
+
 	    if(user.getAddress() != null) {
 
 	        user.getAddress().forEach(address -> {
 	            address.setUser(user);
 	        });
-	        
-	        
-	        
+
+
+
 
 	    }
-	    
-	    
+
+
 		return userRepo.save(user);  //sending hte user data to database
 	}
-	
+
 	//user Login
-	
+
 	public LoginResponse LoginUser(LoginRequest request) {
 
 
@@ -131,8 +127,8 @@ public class AuthService {
 	            authentication.getName(),
 	            role
 	);
-	    
-	   
+
+
 	}
-	
+
 }

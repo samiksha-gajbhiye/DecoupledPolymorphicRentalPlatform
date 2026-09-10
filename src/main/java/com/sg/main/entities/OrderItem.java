@@ -2,7 +2,6 @@ package com.sg.main.entities;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-import java.util.jar.Attributes.Name;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.criteria.Order;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +31,7 @@ public class OrderItem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int itemId;
-	
+
 	private UUID orderCode;
 	private String productCode;
 	@ManyToOne
@@ -49,7 +47,7 @@ public class OrderItem {
 	private BigDecimal subTotal;
 	@Column(nullable = false)
 	private long rentalDuration;
-	
+
 
 	public int getItemId() {
 		return itemId;
@@ -87,14 +85,14 @@ public class OrderItem {
 	public void setSubTotal(BigDecimal subTotal) {
 		this.subTotal = subTotal;
 	}
-	
+
 	public UUID getOrderCode() {
 		return orderCode;
 	}
 	public void setOrderCode(UUID orderCode) {
 		this.orderCode = orderCode;
 	}
-	
+
 	public String getProductCode() {
 		return productCode;
 	}
@@ -110,6 +108,6 @@ public class OrderItem {
 		return "OrderItem [itemId=" + itemId + ", order=" + order + ", product=" + product + ", pricePerDay="
 				+ pricePerDay + ", quantity=" + quantity + ", subTotal=" + subTotal + "]";
 	}
-	
-	
+
+
 }

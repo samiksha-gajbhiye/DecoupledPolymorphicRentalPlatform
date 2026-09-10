@@ -7,5 +7,5 @@ public enum AvailabilityStatus {
 	   RESERVED,
 	    MAINTENANCE,
 	    INACTIVE
-	
+
 }

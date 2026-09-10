@@ -8,5 +8,5 @@ import com.sg.main.entities.ProductImage;
 @Repository
 public interface ProductImageRepository extends JpaRepository<ProductImage, Integer> {
 
-	
+
 }

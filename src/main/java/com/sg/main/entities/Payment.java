@@ -1,7 +1,6 @@
 package com.sg.main.entities;
 
- import com.sg.main.entities.enums.*;
-import java.math.BigDecimal;
+ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,13 +17,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 
 
 
 @Entity
 public class Payment {
-	
+
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private int paymentId;

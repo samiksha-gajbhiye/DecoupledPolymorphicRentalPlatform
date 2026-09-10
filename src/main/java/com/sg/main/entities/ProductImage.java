@@ -36,8 +36,8 @@ public class ProductImage {
 	private String fileType;
 	private Integer width;
 	private Integer height;
-	
-	
+
+
 	public int getImageId() {
 		return imageId;
 	}
@@ -62,7 +62,7 @@ public class ProductImage {
 	public void setPrimaryImage(boolean primaryImage) {
 		this.primaryImage = primaryImage;
 	}
-	
+
 	public int getDisplayOrder() {
 		return displayOrder;
 	}
@@ -87,7 +87,7 @@ public class ProductImage {
 	public void setFileType(String fileType) {
 		this.fileType = fileType;
 	}
-	
+
 	public Integer getWidth() {
 		return width;
 	}
@@ -104,7 +104,7 @@ public class ProductImage {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	
+
+
+
 }

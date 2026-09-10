@@ -5,17 +5,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
 
-import com.sg.main.dto.ConfirmOrderDto;
 import com.sg.main.dto.OrderItemRequest;
 import com.sg.main.dto.RentalOrderRequest;
-import com.sg.main.dto.cancelOrderDto;
 import com.sg.main.entities.OrderItem;
 import com.sg.main.entities.Product;
 import com.sg.main.entities.RentalOrder;
@@ -33,7 +31,7 @@ import com.sg.main.repositories.UserRepository;
 @Service
 public class RentalOrderService {
 
-	
+
 	@Autowired
 	private RentalOrderRepository rentalOrderRepo;
 	@Autowired
@@ -43,26 +41,26 @@ public class RentalOrderService {
 	@Autowired
 	private ProductRepository productrepository;
 
-	
+
 	@Transactional
-	public RentalOrder createRentalOrder(RentalOrderRequest request) {
+	public RentalOrder createRentalOrder(RentalOrderRequest request, Authentication authentication) {
 
 	    // =========================
-	    // 1. CUSTOMER VALIDATION --> check whether Customer exist krta hai ya nahi 
+	    // 1. CUSTOMER VALIDATION --> check whether Customer exist krta hai ya nahi
 	    // =========================
 
-	    User customer = userRepo.findByUserCode(request.getCustomerCode())
+	    User customer = userRepo.findByEmail(authentication.getName())
 	            .orElseThrow(() ->
 	                    new RuntimeException(
-	                            "Customer not found: " + request.getCustomerCode()
+	                            "Customer not found: " + authentication.getName()
 	                    )
 	            );
 
 
 	    // =========================
 	    // 2. DATE VALIDATION --> check whether dates correct hai ya nahi , koi date past mein toh nahi hai ?
-	    //							koi end date start date se pehele toh nahi 
-	    //							kahi dates null toh nahi hai 
+	    //							koi end date start date se pehele toh nahi
+	    //							kahi dates null toh nahi hai
 	    // =========================
 
 	    if (request.getStartDate() == null ||
@@ -100,8 +98,8 @@ public class RentalOrderService {
 
 
 	    // =========================
-	    // 3. ITEMS VALIDATION --> check whether item empty toh nahi hai 
-	    
+	    // 3. ITEMS VALIDATION --> check whether item empty toh nahi hai
+
 	    // =========================
 
 	    if (request.getItems() == null ||
@@ -114,7 +112,7 @@ public class RentalOrderService {
 
 
 	    // =========================
-	    // 4. TOTAL CALCULATIONS--> order k cost sare details calculate karo 
+	    // 4. TOTAL CALCULATIONS--> order k cost sare details calculate karo
 	    // =========================
 
 	    BigDecimal totalSubTotal = BigDecimal.ZERO;
@@ -125,8 +123,8 @@ public class RentalOrderService {
 
 
 	    // =========================
-	    // 5. VALIDATE EACH PRODUCT --> order k har ek item ko validate karo and check karo 
-	    //								koi empty value toh pass nahi ho rahi hai 
+	    // 5. VALIDATE EACH PRODUCT --> order k har ek item ko validate karo and check karo
+	    //								koi empty value toh pass nahi ho rahi hai
 	    // =========================
 
 	    for (OrderItemRequest itemRequest : request.getItems()) {
@@ -195,8 +193,8 @@ public class RentalOrderService {
 
 	        if (product.getUser() != null &&
 	            product.getUser()
-	                   .getUserCode()
-	                   .equals(request.getCustomerCode())) {
+	                   .getEmail()
+	                   .equals(authentication.getName())) {
 
 	            throw new RuntimeException(
 	                    "You cannot rent your own product"
@@ -226,8 +224,8 @@ public class RentalOrderService {
 
 
 	        // =========================
-	        // AVAILABILITY CHECK --> check whether koi rental date already existing rental dates se 
-	        //							overlap toh nahi kr rahi hai 
+	        // AVAILABILITY CHECK --> check whether koi rental date already existing rental dates se
+	        //							overlap toh nahi kr rahi hai
 	        // =========================
 
 	        List<OrderItem> overlapping =
@@ -346,7 +344,7 @@ public class RentalOrderService {
 
 
 	    // =========================
-	    // 7. CREATE ORDER ITEMS --> 
+	    // 7. CREATE ORDER ITEMS -->
 	    // =========================
 
 	    for (int i = 0; i < request.getItems().size(); i++) {
@@ -409,18 +407,18 @@ public class RentalOrderService {
 
 	    return order;
 	}
-	
-	@Transactional
-	public RentalOrder confirmRentalOrder(ConfirmOrderDto confirmOrder) {
 
-	
-	//order validation --> check whether order sahi hia ya nahi , kya order exist krta hia 	
-	    RentalOrder order = rentalOrderRepo.findByOrderCode(confirmOrder.getOrderCode())
+	@Transactional
+	public RentalOrder confirmRentalOrder(UUID orderCode, Authentication authentication) {
+
+
+	//order validation --> check whether order sahi hia ya nahi , kya order exist krta hia
+	    RentalOrder order = rentalOrderRepo.findByOrderCode(orderCode)
 	            .orElseThrow(() ->
-	                new RuntimeException("Order not found: " + confirmOrder.getOrderCode())
+	                new RuntimeException("Order not found: " + orderCode)
 	            );
 
-	 // check whether order ka status : PENDNING  hia ya nahi 
+	 // check whether order ka status : PENDNING  hia ya nahi
 	    if (order.getStatus() != RentalOrderStatus.PENDING) {
 	        throw new RuntimeException(
 	            "Only pending orders can be confirmed"
@@ -431,38 +429,38 @@ public class RentalOrderService {
 	            .get(0)
 	            .getProduct();
 
-	// check whether ye person (owner) actually valide owner hai ya nahi , legitimate owner hi order confirm kr skta hia 
+	// check whether ye person (owner) actually valide owner hai ya nahi , legitimate owner hi order confirm kr skta hia
 	    if (product.getUser() == null ||
-	        !product.getUser().getUserCode().equals(confirmOrder.getOrderCode())) {
+	        !product.getUser().getEmail().equals(authentication.getName())) {
 
 	        throw new RuntimeException(
 	            "You are not authorized to confirm this order"
 	        );
 	    }
 
-	// final order confirmation 
+	// final order confirmation
 	    order.setStatus(RentalOrderStatus.CONFIRMED);
 
 	    return rentalOrderRepo.save(order);
 	}
-	
-	@Transactional
-	public RentalOrder cancelRentalOrder(cancelOrderDto cancelOrder) {
 
-	    // 1. Find the order --> kya order exist krta hai 
-	    RentalOrder order = rentalOrderRepo.findByOrderCode(cancelOrder.getOrderCode())
+	@Transactional
+	public RentalOrder cancelRentalOrder(UUID orderCode, Authentication authentication) {
+
+	    // 1. Find the order --> kya order exist krta hai
+	    RentalOrder order = rentalOrderRepo.findByOrderCode(orderCode)
 	            .orElseThrow(() ->
-	                    new RuntimeException("Order not found: " + cancelOrder.getOrderCode())
+	                    new RuntimeException("Order not found: " + orderCode)
 	            );
 
 	    // 2. Verify that the customer owns this order
-	    if (!order.getCustomer().getUserCode().equals(cancelOrder.getCustomerCode())) {
+	    if (!order.getCustomer().getEmail().equals(authentication.getName())) {
 	        throw new RuntimeException(
 	                "You cannot cancel someone else's order"
 	        );
 	    }
 
-	    // 3. Check current status --> only pending ya confirm orders hi cancel ho skte hai 
+	    // 3. Check current status --> only pending ya confirm orders hi cancel ho skte hai
 	    if (order.getStatus() == RentalOrderStatus.CANCELLED) {
 	        throw new RuntimeException(
 	                "Order is already cancelled"
@@ -475,11 +473,13 @@ public class RentalOrderService {
 	        );
 	    }
 
-	    // 4. Change status 
+	    // 4. Change status
 	    order.setStatus(RentalOrderStatus.CANCELLED);
 
 	    // 5. Save
 	    return rentalOrderRepo.save(order);
-	} 	
+	}
+
+
 
 }

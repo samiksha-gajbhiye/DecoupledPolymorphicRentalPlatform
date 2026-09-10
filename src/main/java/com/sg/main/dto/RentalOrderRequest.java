@@ -9,7 +9,7 @@ public class RentalOrderRequest {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private List<OrderItemRequest> items;
-	
+
 	public String getCustomerCode() {
 		return customerCode;
 	}
@@ -28,8 +28,8 @@ public class RentalOrderRequest {
 	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
-	
-	
+
+
 	public List<OrderItemRequest> getItems() {
 		return items;
 	}
@@ -41,8 +41,8 @@ public class RentalOrderRequest {
 		return "RentalOrderRequest [customerCode=" + customerCode + ", startDate=" + startDate + ", endDate=" + endDate
 				+ "]";
 	}
-	
-	
-	
-	
+
+
+
+
 }

@@ -8,5 +8,5 @@ public enum RentalOrderStatus {
 	COMPLETED ,
 	CANCELLED,
 	LATE
-	
+
 }

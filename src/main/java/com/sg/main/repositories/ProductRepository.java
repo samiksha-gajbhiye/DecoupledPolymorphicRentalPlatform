@@ -1,15 +1,12 @@
 package com.sg.main.repositories;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.sg.main.entities.Category;
 import com.sg.main.entities.Product;
 import com.sg.main.entities.User;
-
-import java.util.List;
 import com.sg.main.entities.enums.AvailabilityStatus;
 
 
@@ -17,8 +14,8 @@ import com.sg.main.entities.enums.AvailabilityStatus;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-	
-	//search product by different attribute 
+
+	//search product by different attribute
 	 List<Product> findByTitleIgnoreCase(String title);
 	 Product findByProductCode(String productCode);
 	 List<Product> findByAvailability(AvailabilityStatus availability);
@@ -30,15 +27,15 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	 List<Product> findByCategoryName(String category);
 	 boolean existsByCategory_Name(String categoryName);
 	 List<Product> findByCategory_Name(String categoryName);
-	 
-	 //check if exist by attribute 
-	
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	
+
+	 //check if exist by attribute
+
+
+
+
+
+
+
+
+
 }

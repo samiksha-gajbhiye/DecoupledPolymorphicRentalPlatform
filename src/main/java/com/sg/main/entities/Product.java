@@ -1,5 +1,6 @@
 package com.sg.main.entities;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sg.main.entities.enums.AvailabilityStatus;
 import com.sg.main.entities.enums.ProductCondition;
+import com.sg.main.entities.enums.VerificationStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -21,17 +23,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 
 @Entity
-public class Product {
+public class Product implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int  productId;
+	private static final long serialVersionUID = 1L;
 	@ManyToOne
 	@JoinColumn(name = "userId")
 	@JsonBackReference("user-product")
@@ -75,7 +76,11 @@ public class Product {
 		)
 	@JsonManagedReference
 		private List<ProductImage> images = new ArrayList<>();
-	
+	@Enumerated(EnumType.STRING)
+		private VerificationStatus verificationStatus= VerificationStatus.PENDING;
+
+
+
 	public int getProductId() {
 		return productId;
 	}
@@ -118,7 +123,7 @@ public class Product {
 	public void setModel(String model) {
 		this.model = model;
 	}
-	
+
 	public BigDecimal getPricePerDay() {
 		return pricePerDay;
 	}
@@ -143,7 +148,7 @@ public class Product {
 	public void setAvailability(AvailabilityStatus availability) {
 		this.availability = availability;
 	}
-	
+
 	public String getProductCode() {
 		return productCode;
 	}
@@ -180,17 +185,31 @@ public class Product {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-	
+
 	public ProductCondition getCondition() {
 		return condition;
 	}
 	public void setCondition(ProductCondition condition) {
 		this.condition = condition;
 	}
+
+	public List<ProductImage> getImages() {
+		return images;
+	}
+	public void setImages(List<ProductImage> images) {
+		this.images = images;
+	}
+	public VerificationStatus getVerificationStatus() {
+		return verificationStatus;
+	}
+	public void setVerificationStatus(VerificationStatus verificationStatus) {
+		this.verificationStatus = verificationStatus;
+		this.verified=(verificationStatus==VerificationStatus.VERIFIED);
+	}
 	public Product() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
+
+
 }

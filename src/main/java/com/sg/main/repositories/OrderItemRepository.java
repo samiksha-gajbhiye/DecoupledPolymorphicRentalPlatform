@@ -14,7 +14,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
 
-	
+
 	@Query("""
 		    SELECT oi
 		    FROM OrderItem oi
@@ -27,8 +27,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
 		        @Param("productCode") String productCode,
 		        @Param("startDate") LocalDate startDate,
 		        @Param("endDate") LocalDate endDate);
-			
-			
-	
-	
+
+
+
+
 }

@@ -31,6 +31,6 @@ public class RedisTestController {
 	    public String delete() {
 	        redisService.delete("name");
 	        return "Data deleted";
-	
+
 }
 }

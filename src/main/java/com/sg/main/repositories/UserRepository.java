@@ -1,6 +1,5 @@
 package com.sg.main.repositories;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,24 +10,24 @@ import com.sg.main.entities.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-	
-//Finding user by attributes 
+
+//Finding user by attributes
 	public Optional<User>  findByEmail(String email);
 	public Optional<User> findByName(String name);
 	public Optional<User> findById(int id);
 	public Optional<User> findByUserCode(String userCode);
 	boolean existsByEmail(String email);
-	
-	
-//delete user by Usercode 
-	
+
+
+//delete user by Usercode
+
 	public void deleteByUserCode(String userCode);
 	public   boolean existsByUserCode(String userCode);
 
-//delete user by id 
-	
+//delete user by id
+
 	public boolean existsById(int id);
-	
-	
+
+
 
 }

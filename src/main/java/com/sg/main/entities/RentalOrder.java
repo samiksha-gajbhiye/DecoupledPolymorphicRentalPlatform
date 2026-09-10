@@ -3,15 +3,16 @@ package com.sg.main.entities;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import com.sg.main.entities.enums.PaymentStatus;
 import com.sg.main.entities.enums.RentalOrderStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,7 +23,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,7 +41,7 @@ public class RentalOrder {
 	@ManyToOne
 	@JoinColumn(name = "userId")
 	private User customer ;
-	
+
 	@OneToMany(mappedBy = "order")
 	private List<Payment> payment;
 	private UUID orderCode;
@@ -80,7 +80,7 @@ public class RentalOrder {
 	@Builder.Default
 	@OneToMany
 	private List<OrderItem> orderItem = new ArrayList<>();
-	
+
 	public int getOrderId() {
 		return orderId;
 	}
@@ -147,8 +147,8 @@ public class RentalOrder {
 	public void setStatus(RentalOrderStatus status) {
 		this.status = status;
 	}
-	
-	
+
+
 	public PaymentStatus getPaymentStatus() {
 		return paymentStatus;
 	}
@@ -173,7 +173,7 @@ public class RentalOrder {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-	
+
 	public String getPaymentTransactionId() {
 		return paymentTransactionId;
 	}
@@ -198,7 +198,7 @@ public class RentalOrder {
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-	
+
 	public LocalDateTime getCancelledAt() {
 		return cancelledAt;
 	}
@@ -211,8 +211,8 @@ public class RentalOrder {
 	public void setReturnRemarks(String returnRemarks) {
 		this.returnRemarks = returnRemarks;
 	}
-	 
-	
+
+
 	public List<Payment> getPayment() {
 		return payment;
 	}
@@ -236,10 +236,10 @@ public class RentalOrder {
 				+ ", subTotal=" + subTotal + ", discount=" + discount + ", deposit=" + deposit + ", grandTotal="
 				+ grandTotal + ", status=" + status + "]";
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 }

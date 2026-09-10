@@ -1,39 +1,33 @@
 package com.sg.main.controller;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sg.main.dto.ConfirmOrderDto;
 import com.sg.main.dto.OrderItemRequest;
 import com.sg.main.dto.RentalOrderRequest;
-import com.sg.main.dto.cancelOrderDto;
 import com.sg.main.entities.RentalOrder;
-import com.sg.main.entities.User;
 import com.sg.main.services.UserService;
-
-
 
 @RestController
 @RequestMapping("/rentalOrder")
 public class RentalOrderController {
 
-	@Autowired 
+	@Autowired
 	private com.sg.main.services.RentalOrderService rentalOrderService;
 	@Autowired
 	private UserService userService;
-	
-	
-	
 
+
+
+//order place krne k liye
 	@PostMapping("/orderRequest")
 	public ResponseEntity<RentalOrder> createRentalOrder(@RequestBody RentalOrderRequest request, Authentication authentication)
 	{
@@ -48,25 +42,30 @@ public class RentalOrderController {
 		        System.out.println("PRODUCT CODE = [" + item1.getProductCode() + "]");
 		        System.out.println("QUANTITY = [" + item1.getQuantity() + "]");
 		    }
-		Optional<User> customer = userService.findUser(authentication.getName());
-		RentalOrder order = rentalOrderService.createRentalOrder(request);
+
+		RentalOrder order = rentalOrderService.createRentalOrder(request, authentication);
 		return ResponseEntity.ok(order);
-		
+
 	}
-	
-	@PostMapping("/cancelOrder")
-	public ResponseEntity<RentalOrder> cancelOrder(@RequestBody cancelOrderDto cancelOrder, Authentication authentication)
+
+
+	// order cancel krne  liye
+	@PostMapping("/cancelOrder/{orderCode}")
+	public ResponseEntity<RentalOrder> cancelOrder(@PathVariable UUID orderCode, Authentication authentication)
 	{
-		Optional<User> customer = userService.findUser(authentication.getName());
-		return ResponseEntity.ok(rentalOrderService.cancelRentalOrder(cancelOrder));
+
+		return ResponseEntity.ok(rentalOrderService.cancelRentalOrder(orderCode, authentication));
 	}
-	
-	@PostMapping("/confirmOrder")
-	public ResponseEntity<RentalOrder> confirmOrder(@RequestBody ConfirmOrderDto confirmOrder , Authentication authentication)
+
+
+
+	//order confirm krne k liya (sirf owner/lender hi order confirm kr skta hai )
+	@PostMapping("/confirmOrder/{orderCode}")
+	public ResponseEntity<RentalOrder> confirmOrder(@PathVariable UUID orderCode, Authentication authentication)
 	{
-		Optional<User> customer = userService.findUser(authentication.getName());
-		return ResponseEntity.ok(rentalOrderService.confirmRentalOrder(confirmOrder));
+
+		return ResponseEntity.ok(rentalOrderService.confirmRentalOrder(orderCode, authentication));
 	}
-	
+
 
 }

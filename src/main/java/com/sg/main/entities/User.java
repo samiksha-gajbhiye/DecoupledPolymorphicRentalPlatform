@@ -1,43 +1,37 @@
 	package com.sg.main.entities;
-	
-	import java.io.File;
+
 	import java.time.LocalDateTime;
-	import java.util.ArrayList;
-	import java.util.Date;
-	import java.util.List;
-	
-	import org.hibernate.annotations.CreationTimestamp;
-	import org.springframework.stereotype.Component;
-	
-	import com.fasterxml.jackson.annotation.JsonIgnore;
-	import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.micrometer.common.lang.Nullable;
-	import jakarta.persistence.CascadeType;
-	import jakarta.persistence.Column;
-	import jakarta.persistence.Entity;
-	import jakarta.persistence.GeneratedValue;
-	import jakarta.persistence.GenerationType;
-	import jakarta.persistence.Id;
-	import jakarta.persistence.JoinColumn;
-	import jakarta.persistence.ManyToOne;
-	import jakarta.persistence.OneToMany;
-	import jakarta.persistence.OneToOne;
-	
-	
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
+
 	@Entity
 	public class User {
-	
+
 		@Id
 		 @GeneratedValue(strategy = GenerationType.IDENTITY )
-		
+
 		private int id ;
 		private String name;
 		@Column(unique = true, nullable = false)
 		private String email;
 		@Column(nullable = false, unique = true)
-		private long phone; 
+		private long phone;
 		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private String password;
 		@Column(nullable = false, unique = true)
@@ -53,14 +47,14 @@ import io.micrometer.common.lang.Nullable;
 		@JsonIgnore
 		private List<Address> address= new ArrayList<>();
 		@OneToMany(mappedBy="user")
-		
+
 		@JsonIgnore
 		private List<Product> products = new ArrayList<>();
 		@CreationTimestamp
 		private LocalDateTime createdAt;
-		
-	
-		
+
+
+
 		public String getPassword() {
 			return password;
 		}
@@ -91,8 +85,8 @@ import io.micrometer.common.lang.Nullable;
 		public void setPhone(long phone) {
 			this.phone = phone;
 		}
-		
-		
+
+
 		public String getProfileImage() {
 			return profileImage;
 		}
@@ -111,8 +105,8 @@ import io.micrometer.common.lang.Nullable;
 		public void setAddress(List<Address> address) {
 			this.address = address;
 		}
-		
-		
+
+
 		public String getUserCode() {
 			return userCode;
 		}
@@ -125,7 +119,7 @@ import io.micrometer.common.lang.Nullable;
 		public void setProducts(List<Product> products) {
 			this.products = products;
 		}
-		
+
 		public LocalDateTime getCreatedAt() {
 			return createdAt;
 		}
@@ -141,8 +135,8 @@ import io.micrometer.common.lang.Nullable;
 			return "User [id=" + id + ", name=" + name + ", email=" + email + ", phone=" + phone + ", password=" + password
 					+ ", profileImage=" + profileImage + ", role=" + role + ", address=" + address + "]";
 		}
-		
-		
-		
-		
+
+
+
+
 	}

@@ -14,7 +14,7 @@ public class Address {
 	private int addressId;
 	@ManyToOne
 	@JoinColumn(name = "userId")
-	private User user;	
+	private User user;
 	public int getAddressId() {
 		return addressId;
 	}
@@ -73,7 +73,7 @@ public class Address {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	
+
+
+
 }

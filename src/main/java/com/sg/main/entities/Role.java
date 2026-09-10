@@ -19,13 +19,13 @@ public class Role {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String roleName;
-	
+
 	@OneToMany(mappedBy = "role")
 	@JsonIgnore
 	private List<User> users = new ArrayList<>();
-	
-	
-	
+
+
+
 	public int getId() {
 		return id;
 	}
@@ -41,8 +41,8 @@ public class Role {
 	public String getRoleName() {
 		return roleName;
 	}
-	
-	
+
+
 	@JsonIgnore
 	public List<User> getUser() {
 		return users;
@@ -57,7 +57,7 @@ public class Role {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	
+
+
+
 }

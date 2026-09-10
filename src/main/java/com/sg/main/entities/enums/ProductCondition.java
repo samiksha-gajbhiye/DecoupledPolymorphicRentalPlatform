@@ -7,5 +7,5 @@ public enum ProductCondition {
     GOOD,
     FAIR,
     POOR
-	
+
 }
