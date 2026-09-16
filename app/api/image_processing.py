@@ -9,16 +9,66 @@ from app.config.logger import logger
 from app.schemas.common import BaseResponse
 from app.schemas.request import HashCompareRequest
 from app.schemas.response import (
+    AuthenticityResponse,
     CompressionResponse,
+    DetectResponse,
     HashCompareResponse,
     HashResponse,
     VerifyResponse,
 )
+from app.services.image.authenticity_service import ImageAuthenticityService
 from app.services.image.compression_service import ImageCompressionService
+from app.services.image.detection_service import ImageDetectionService
 from app.services.image.hash_service import ImageHashService
 from app.services.image.verification_service import ImageVerificationService
 
 router = APIRouter(prefix="/image", tags=["Image Processing"])
+
+
+@router.post(
+    "/authenticity",
+    response_model=AuthenticityResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Check whether an image is AI-generated (stateless)",
+    description=(
+        "One signal, not a verdict — trained on older generators, may miss "
+        "the newest ones. See settings.ai.ai_generated_threshold."
+    ),
+)
+async def check_image_authenticity(file: UploadFile = File(...)) -> AuthenticityResponse:
+    logger.info(f"Checking authenticity of: {file.filename}")
+    try:
+        service = ImageAuthenticityService()
+        return await service.check(file)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.exception("Unexpected error occurred during authenticity check.")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to check image authenticity.",
+        ) from exc
+
+
+@router.post(
+    "/detect",
+    response_model=DetectResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Detect objects in an image (stateless)",
+)
+async def detect_image(file: UploadFile = File(...)) -> DetectResponse:
+    logger.info(f"Detecting objects in: {file.filename}")
+    try:
+        service = ImageDetectionService()
+        return await service.detect(file)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.exception("Unexpected error occurred during object detection.")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to detect objects.",
+        ) from exc
 
 
 @router.post(

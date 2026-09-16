@@ -45,7 +45,10 @@ class AIConfig(BaseModel):
     clip_directory: Path = Path("models/clip")
     yolo_directory: Path = Path("models/yolo")
     yolo_model: Path = Path("models/yolo/weights/yolo11n.pt")
-    yolo_confidence: float = 0.25
+    # 0.25 (ultralytics' own default) let a 33.6%-confidence false "laptop"
+    # through on a real test photo. Raised as an interim fix — recalibrate
+    # properly with scripts/calibrate_yolo_confidence.py.
+    yolo_confidence: float = 0.5
     yolo_iou_threshold: float = 0.45
     yolo_max_detections: int = 100
     # Calibrated 2026-08-27: sharp >= 596, blurry <= 386 (measured at 512px, downscale-only)
@@ -54,6 +57,13 @@ class AIConfig(BaseModel):
     # Calibrated 2026-09-08: same-image variants <= 90, different images >= 110 (hash_size=16)
     duplicate_threshold: int = 95
     duplicate_hash_size: int = 16
+    authenticity_model: str = "Smogy/SMOGY-Ai-images-detector"
+    authenticity_directory: Path = Path("models/authenticity")
+    categories_config_path: Path = Path("app/config/categories.json")
+    # Confirmed 2026-09-12: correctly flags most real photos, but missed a
+    # modern AI-generated desk photo entirely (0.0 confidence, not
+    # borderline). One signal, not a verdict -- don't gate solely on this.
+    ai_generated_threshold: float = 0.5
     embedding_model: str = "all-MiniLM-L6-v2"
     sentence_transformer_directory: Path = Path("models/sentence_transformers")
     vector_database: Path = Path("app/ml/vector_db")

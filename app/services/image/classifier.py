@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from copy import deepcopy
 from io import BytesIO
 from typing import Any
@@ -49,6 +50,22 @@ DEFAULT_CATEGORIES: dict[str, list[str]] = {
 }
 
 
+def load_categories() -> dict[str, list[str]]:
+    """Load categories from settings.ai.categories_config_path, falling
+    back to DEFAULT_CATEGORIES if that file is missing or invalid."""
+    path = settings.ai.categories_config_path
+    if not path.exists():
+        logger.warning(f"{path} not found, falling back to DEFAULT_CATEGORIES.")
+        return deepcopy(DEFAULT_CATEGORIES)
+
+    try:
+        with open(path, "r") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError) as exc:
+        logger.warning(f"Failed to load {path} ({exc}), falling back to DEFAULT_CATEGORIES.")
+        return deepcopy(DEFAULT_CATEGORIES)
+
+
 class ImageClassifier:
     """Zero-shot image classifier powered by OpenCLIP."""
 
@@ -75,7 +92,7 @@ class ImageClassifier:
         self.categories = (
             deepcopy(categories)
             if categories is not None
-            else deepcopy(DEFAULT_CATEGORIES)
+            else load_categories()
         )
 
         self._validate_categories()

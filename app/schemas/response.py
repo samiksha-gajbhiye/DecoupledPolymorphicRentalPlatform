@@ -211,6 +211,30 @@ class VerifyResponse(BaseResponse[VerifyData]):
     Standard response returned by the stateless /image/verify endpoint.
     """
     model_config = MODEL_CONFIG
+class DetectedObject(BaseModel):
+    model_config = MODEL_CONFIG
+    label: Annotated[str, Field(examples=["chair"])]
+    confidence: Annotated[float, Field(ge=0.0, le=100.0, description="Percent, 0-100.", examples=[87.3])]
+    bbox: Annotated[list[float], Field(min_length=4, max_length=4, description="[x1, y1, x2, y2]", examples=[[34.0, 12.0, 210.0, 340.0]])]
+class DetectData(BaseModel):
+    model_config = MODEL_CONFIG
+    objects: Annotated[list[DetectedObject], Field(description="One entry per detected object.")]
+    object_count: Annotated[int, Field(ge=0, examples=[1])]
+class DetectResponse(BaseResponse[DetectData]):
+    """
+    Standard response returned by the stateless /image/detect endpoint.
+    """
+    model_config = MODEL_CONFIG
+class AuthenticityData(BaseModel):
+    model_config = MODEL_CONFIG
+    is_ai_generated: Annotated[bool, Field(examples=[False])]
+    ai_generated_confidence: Annotated[float, Field(ge=0.0, le=1.0, description="Model's confidence in the is_ai_generated verdict.", examples=[0.04])]
+    raw_label: Annotated[str, Field(description="Exact label the model returned, for debugging.", examples=["human"])]
+class AuthenticityResponse(BaseResponse[AuthenticityData]):
+    """
+    Standard response returned by the stateless /image/authenticity endpoint.
+    """
+    model_config = MODEL_CONFIG
 # Stateless Hash Response Data
 class HashData(BaseModel):
     """

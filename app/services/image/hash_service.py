@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import string
-from io import BytesIO
 
 import imagehash
 from fastapi import HTTPException, UploadFile, status
@@ -15,6 +14,7 @@ from app.schemas.response import (
     HashResponse,
 )
 from app.services.image.duplicate import DuplicateDetector
+from app.utils.image_utils import load_image
 
 
 class ImageHashService:
@@ -49,15 +49,12 @@ class ImageHashService:
                 detail="Uploaded file is empty.",
             )
 
-        # Deliberately reuses the detector's own validate + hash steps so a
-        # hash from this endpoint is always comparable with one produced
-        # anywhere else in the project.
         try:
-            image = self._detector._validate_image(BytesIO(raw_bytes))
-        except (ValueError, TypeError) as exc:
+            image = load_image(raw_bytes)
+        except ValueError as exc:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Uploaded file is not a valid image.",
+                detail=str(exc),
             ) from exc
 
         try:

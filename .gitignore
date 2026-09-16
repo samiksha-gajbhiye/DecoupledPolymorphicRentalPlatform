@@ -30,6 +30,7 @@ models/yolo/weights/*.pt
 models/sentence_transformers/cache/
 models/custom/checkpoints/
 models/custom/exported/
+models/authenticity/models--Smogy--SMOGY-Ai-images-detector
 app/ml/checkpoints/
 app/ml/embeddings/
 app/ml/vector_db/
@@ -44,3 +45,4 @@ app/ml/trained_models/
 graphify-out 
 2026-09-07-155915-this-session-is-being-continued-from-a-previous-c.txt
 2026-09-07-160006-this-session-is-being-continued-from-a-previous-c.txt
+.claude/
