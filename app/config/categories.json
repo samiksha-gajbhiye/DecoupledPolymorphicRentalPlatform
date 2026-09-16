@@ -1,0 +1,20 @@
+{
+    "Furniture": [
+        "chair", "table", "sofa", "bed", "desk", "bookshelf", "wardrobe", "cabinet"
+    ],
+    "Electrical Appliances": [
+        "laptop", "smartphone", "television", "monitor", "camera", "headphones",
+        "printer", "refrigerator", "washing machine", "microwave",
+        "air conditioner", "vacuum cleaner"
+    ],
+    "Clothes": [
+        "shirt", "t-shirt", "jeans", "jacket", "dress", "skirt", "sweater",
+        "coat", "shoes", "saree", "kurta"
+    ],
+    "Books": [
+        "novel", "textbook", "notebook", "magazine", "comic book", "encyclopedia"
+    ],
+    "Vehicles": [
+        "car", "motorcycle", "bicycle", "scooter"
+    ]
+}
