@@ -21,6 +21,7 @@ import com.sg.main.entities.Category;
 import com.sg.main.entities.Product;
 import com.sg.main.entities.ProductImage;
 import com.sg.main.entities.User;
+import com.sg.main.entities.enums.VerificationStatus;
 import com.sg.main.repositories.CategoryRepository;
 import com.sg.main.repositories.ProductImageRepository;
 import com.sg.main.repositories.ProductRepository;
@@ -37,7 +38,8 @@ public class ProductService {
 	private UserRepository userRepository;
 	@Autowired
 	private CategoryRepository categoryRepository;
-
+	@Autowired
+	private ImageVerificationResultService imageVerificationService;
 
 
 
@@ -102,6 +104,7 @@ product.setProductCode(productCode);
 	    }
 
 	    boolean firstImage = true;
+	    boolean allPassed = true;
 	    int displayOrder = 1;
 
 	  //  System.out.println("No. of images = " + productImages.size());
@@ -141,15 +144,24 @@ product.setProductCode(productCode);
 	        img.setFileSize(image.getSize());
 	        img.setFileType(image.getContentType());
 
-	        img.setWidth(bufferedImage.getWidth());
-	        img.setHeight(bufferedImage.getHeight());
+	       
 
-	        productImageRepository.save(img);
+	        if (bufferedImage != null) {
+	            img.setWidth(bufferedImage.getWidth());
+	            img.setHeight(bufferedImage.getHeight());
+	        }
+
+	        img = productImageRepository.save(img);
+
+	        if (!imageVerificationService.verify(image, img, category.getName())) {
+	            allPassed = false;
+	        }
 
 	        firstImage = false;
 	    }
 
-	    return product;
+	    product.setVerificationStatus(allPassed ? VerificationStatus.VERIFIED : VerificationStatus.NOT_VERIFIED);
+	    return productRepository.save(product);
 	}
 
 
@@ -158,6 +170,7 @@ product.setProductCode(productCode);
 	public List<Product> GetProductDetailsByName(String title )
 	{
 
+		
 		return productRepository.findByTitleIgnoreCase(title) ;
 	}
 

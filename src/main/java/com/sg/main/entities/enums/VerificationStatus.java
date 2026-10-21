@@ -3,7 +3,7 @@ package com.sg.main.entities.enums;
 public enum VerificationStatus {
 
 	PENDING,
-	NOT_VERFIED,
+	NOT_VERIFIED,
 	VERIFIED
 
 

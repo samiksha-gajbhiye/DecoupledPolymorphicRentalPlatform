@@ -46,7 +46,7 @@ public class ProductController {
 	public ResponseEntity<List<Product>> getProductByTitle(@PathVariable String title)
 	{
 		System.out.println("Reach controller");
-
+		
 		List<Product> product = productService.GetProductDetailsByName(title);
 		return ResponseEntity.ok(product);
 
