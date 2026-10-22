@@ -69,6 +69,8 @@ class AIConfig(BaseModel):
     vector_database: Path = Path("app/ml/vector_db")
     checkpoint_directory: Path = Path("app/ml/checkpoints")
     model_directory: Path = Path("models")
+    search_min_score :float = 0.20
+    search_strong_score :float = 0.40
     # Classification gate. Applied to the total probability mass of the winning
     # CATEGORY, not to the top-1 label — see ImageClassifier._postprocess for why
     # a top-1 label probability is not a usable confidence here.

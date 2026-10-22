@@ -310,3 +310,18 @@ class FraudResponse(BaseResponse[FraudData]):
     Standard response returned by the fraud detection module.
     """
     model_config = MODEL_CONFIG
+class RankedItem(BaseModel):
+    model_config = MODEL_CONFIG
+    id: Annotated[int, Field(description="Identifier of the item, as supplied in the request.")]
+    score: Annotated[float, Field(description="Cosine similarity between query and item, 0-1.")]
+    strong: Annotated[bool, Field(description="True when the score clears the strong-match threshold.")]
+
+
+class SemanticRankData(BaseModel):
+    model_config = MODEL_CONFIG
+    query: Annotated[str, Field(description="The query that was ranked against.")]
+    results: Annotated[list[RankedItem], Field(description="Items at or above the minimum score, best first.")]
+
+
+class SemanticRankResponse(BaseResponse[SemanticRankData]):
+    model_config = MODEL_CONFIG

@@ -4,6 +4,7 @@ import json
 from copy import deepcopy
 from io import BytesIO
 from typing import Any
+from pathlib import Path
 
 import open_clip
 import torch
@@ -25,7 +26,7 @@ DEFAULT_CATEGORIES: dict[str, list[str]] = {
         "wardrobe",
         "cabinet",
     ],
-    "Electronics": [
+    "Electrical Appliances": [
         "laptop",
         "smartphone",
         "television",
@@ -33,13 +34,32 @@ DEFAULT_CATEGORIES: dict[str, list[str]] = {
         "camera",
         "headphones",
         "printer",
-    ],
-    "Appliances": [
         "refrigerator",
         "washing machine",
         "microwave",
         "air conditioner",
         "vacuum cleaner",
+    ],
+    "Clothes": [
+        "shirt",
+        "t-shirt",
+        "jeans",
+        "jacket",
+        "dress",
+        "skirt",
+        "sweater",
+        "coat",
+        "shoes",
+        "saree",
+        "kurta",
+    ],
+    "Books": [
+        "novel",
+        "textbook",
+        "notebook",
+        "magazine",
+        "comic book",
+        "encyclopedia",
     ],
     "Vehicles": [
         "car",

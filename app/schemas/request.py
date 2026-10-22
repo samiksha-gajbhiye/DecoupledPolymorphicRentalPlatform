@@ -96,3 +96,23 @@ class HashCompareRequest(BaseRequest):
             examples=[["ab94d06b0d3b3574", "1c2e3f4a5b6c7d8e"]],
         ),
     ]
+class SearchItem(BaseRequest):
+    id: Annotated[int, Field(description="Caller's identifier for this item, returned unchanged.", examples=[12])]
+    text: Annotated[
+        str,
+        Field(
+            min_length=1,
+            max_length=4000,
+            description="Searchable text for the item (title, brand, category, description).",
+            examples=["Leather Sofa Set. Nilkamal S3. Furniture. Three seater couch."],
+        ),
+    ]
+
+
+class SemanticRankRequest(BaseRequest):
+    query: Annotated[
+        str,
+        Field(min_length=1, max_length=200, description="What the user typed in the search box.", examples=["something to sit on"]),
+    ]
+    items: Annotated[list[SearchItem], Field(min_length=1, max_length=1000, description="Items to rank.")]
+    top_k: Annotated[int, Field(default=20, ge=1, le=100, description="Maximum number of ranked items to return.")]

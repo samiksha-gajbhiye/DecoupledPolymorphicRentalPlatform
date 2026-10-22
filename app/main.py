@@ -2,6 +2,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.image_processing import router as image_router
+from app.api.semantic_search import router as search_router              
+from app.services.search.search_service import get_embedder            
 from app.config.logger import logger
 from app.config.settings import settings
 
@@ -10,6 +12,7 @@ async def lifespan(app: FastAPI):
     # No database or disk setup: this service is stateless by design.
     # Java owns all storage — see the image endpoints for the contract.
     logger.info(f"Starting {settings.application.name} Service...")
+    get_embedder()  # Preload the embedding model on startup
     yield
     logger.info(f"Shutting down {settings.application.name} Service...")
 
@@ -29,6 +32,7 @@ app.add_middleware(
 )
 
 app.include_router(image_router, prefix=settings.application.api_prefix)
+app.include_router(search_router, prefix=settings.application.api_prefix) 
 
 
 @app.get("/")
