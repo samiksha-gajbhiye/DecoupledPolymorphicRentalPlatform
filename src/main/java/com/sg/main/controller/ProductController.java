@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sg.main.dto.SearchHit;
 import com.sg.main.entities.Product;
+import com.sg.main.services.ProductSearchService;
 import com.sg.main.services.ProductService;
 
 
@@ -27,6 +30,9 @@ public class ProductController {
 
 	@Autowired
 	ProductService productService ;
+
+	@Autowired
+	ProductSearchService productSearchService;
 
 
 	@PreAuthorize("hasAnyRole('OWNER','USER')")
@@ -60,6 +66,11 @@ public class ProductController {
 	            productService.findAllProductByCategory(category);
 
 	    return ResponseEntity.ok(products);
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<List<SearchHit>> searchProducts(@RequestParam("q") String q) {
+		return ResponseEntity.ok(productSearchService.search(q));
 	}
 
 	@GetMapping("/all")

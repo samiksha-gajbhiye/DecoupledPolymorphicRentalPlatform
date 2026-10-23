@@ -76,7 +76,7 @@ public class SecurityConfig   {
                     "/product/**",
                     "/category/**",
                     "/images/**",
-                    "/upload/**",
+                    "/uploads/**",
                     "/error"
 
                 ).permitAll()
