@@ -1,10 +1,25 @@
+import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CalendarDays, MapPin, Search } from 'lucide-react';
 import DateInput from './DateInput';
 
 const SearchBar = () => {
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const [query, setQuery] = useState(params.get('q') || '');
+  const [location, setLocation] = useState(params.get('location') || '');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const next = new URLSearchParams();
+    if (query.trim()) next.set('q', query.trim());
+    if (location.trim()) next.set('location', location.trim());
+    navigate(`/search?${next.toString()}`);
+  };
+
   return (
     <div className="rental-search">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="search-field search-query">
             <label htmlFor="search-query" className="sr-only">Search query</label>
             <div>
@@ -15,6 +30,8 @@ const SearchBar = () => {
                 id="search-query"
                 placeholder="What are you looking for?"
                 className="search-input"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
               />
             </div>
           </div>
@@ -28,6 +45,8 @@ const SearchBar = () => {
                 id="location"
                 placeholder="Location"
                 className="search-input"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
               />
             </div>
           </div>

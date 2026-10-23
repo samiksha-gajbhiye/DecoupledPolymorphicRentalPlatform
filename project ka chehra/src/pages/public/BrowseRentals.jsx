@@ -7,6 +7,7 @@ import { getAllProducts, resolveImageUrl } from '../../api/productApi';
 const toCardModel = (product) => ({
   id: product.productId,
   name: product.title,
+  description: product.description,
   category: product.category?.name || 'Uncategorized',
   location: product.location,
   rating: product.rating ?? 0,

@@ -1,45 +1,47 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../../components/ProductCard';
 import SearchBar from '../../components/SearchBar';
 import SortSelector from '../../components/SortSelector';
 import FiltersSidebar from '../../components/FiltersSidebar';
+import { getAllProducts, resolveImageUrl } from '../../api/productApi';
+import { rankProducts } from '../../utils/search';
+
+const toCardModel = (product) => ({
+  id: product.productId,
+  name: product.title,
+  description: product.description,
+  category: product.category?.name || 'Uncategorized',
+  location: product.location,
+  rating: product.rating ?? 0,
+  price: product.pricePerDay,
+  image: resolveImageUrl(product.images?.[0]?.imageUrl) || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400',
+  availability: product.availability,
+  verified: product.verified,
+});
 
 const SearchResults = () => {
-  // Sample search results data
-  const results = [
-    {
-      id: 201,
-      name: "GoPro Hero 11 Bundle",
-      category: "Cameras",
-      location: "San Diego, CA",
-      rating: 4.8,
-      price: 50,
-      image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400",
-      availability: "Available",
-      verified: true
-    },
-    {
-      id: 202,
-      name: "Mountain Bike",
-      category: "Sports Equipment",
-      location: "Portland, OR",
-      rating: 4.6,
-      price: 40,
-      image: "https://images.unsplash.com/photo-1518248125592-2b67025e5d83?w=400",
-      availability: "Available",
-      verified: true
-    },
-    {
-      id: 203,
-      name: "Nintendo Switch Console",
-      category: "Electronics",
-      location: "Boston, MA",
-      rating: 4.9,
-      price: 35,
-      image: "https://images.unsplash.com/photo-1601233272723-31d34574b9cb?w=400",
-      availability: "Available",
-      verified: false
-    }
-  ];
+  const [params] = useSearchParams();
+  const query = params.get('q') || '';
+  const location = params.get('location') || '';
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    getAllProducts()
+      .then(setProducts)
+      .catch(() => setError('Could not load rentals. Is the backend running on port 8080?'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const { matches, similar } = useMemo(
+    () => rankProducts(query, products, location),
+    [query, location, products]
+  );
+
+  const label = [query && `"${query}"`, location && `in ${location}`].filter(Boolean).join(' ');
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -49,31 +51,56 @@ const SearchResults = () => {
             Search Results
           </h1>
           <p className="text-gray-600 dark:text-gray-300 mt-2">
-            Found {results.length} items for your search
+            {loading
+              ? 'Searching...'
+              : `Found ${matches.length} item${matches.length === 1 ? '' : 's'}${label ? ` for ${label}` : ''}`}
           </p>
         </div>
         <SearchBar />
 
+        {error && (
+          <div className="mt-6 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 px-4 py-3 rounded-md">
+            {error}
+          </div>
+        )}
+
         <div className="mt-8 flex flex-col lg:flex-row lg:gap-8">
-          {/* Filters Sidebar */}
           <FiltersSidebar className="lg:w-64" />
 
-          {/* Results */}
           <div className="flex-1">
             <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
               <div className="mb-4 sm:mb-0">
                 <p className="text-gray-500 dark:text-gray-400">
-                  Showing {results.length} results
+                  Showing {matches.length} results
                 </p>
               </div>
               <SortSelector />
             </div>
 
+            {!loading && !error && matches.length === 0 && (
+              <p className="text-gray-500 dark:text-gray-400 mb-6">
+                No exact matches{similar.length > 0 ? ' — here are some similar items.' : ' found. Try a different word.'}
+              </p>
+            )}
+
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {results.map(item => (
-                <ProductCard key={item.id} product={item} />
+              {matches.map((item) => (
+                <ProductCard key={item.productId} product={toCardModel(item)} />
               ))}
             </div>
+
+            {similar.length > 0 && (
+              <div className="mt-12">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                  Similar items you may like
+                </h2>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {similar.map((item) => (
+                    <ProductCard key={item.productId} product={toCardModel(item)} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

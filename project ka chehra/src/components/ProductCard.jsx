@@ -1,27 +1,36 @@
 import React from 'react';
-import { Image } from 'lucide-react';
+import { Image, ShieldCheck } from 'lucide-react';
 
 const ProductCard = ({ product, onClick }) => {
   return (
     <div
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer flex flex-col h-full"
       onClick={onClick}
     >
-      <div className="aspect-w-16 aspect-h-9">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-gray-700">
         <img
           src={product.image || '/placeholder.svg'}
           alt={product.name}
-          className="object-cover w-full h-full"
+          className="absolute inset-0 h-full w-full object-cover"
         />
+        {product.verified && (
+          <span
+            title="Product images verified by AI"
+            className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-green-600 px-2 py-1 text-xs font-semibold text-white shadow-md"
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Verified
+          </span>
+        )}
       </div>
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
           {product.name}
         </h3>
         <p className="text-gray-600 dark:text-gray-400 line-clamp-2">
           {product.description || 'No description available'}
         </p>
-        <div className="mt-4 flex justify-between items-center">
+        <div className="mt-auto pt-4 flex justify-between items-center">
           <span className="text-xl font-semibold text-blue-600 dark:text-blue-400">
             ₹{product.price || 0}/day
           </span>
